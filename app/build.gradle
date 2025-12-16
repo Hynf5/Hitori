@@ -25,11 +25,11 @@ android {
     }
 
     defaultConfig {
-		applicationId 'io.github.kotatsuredo.kotatsu'
+		applicationId 'io.github.hitori.kotatsu'
 		minSdk = 23
 		targetSdk = 36
-		versionCode = 1090
-		versionName = '9.5.5'
+		versionCode = 1095
+		versionName = '9.5.6'
 		generatedDensities = []
 		testInstrumentationRunner 'org.koitharu.kotatsu.HiltTestRunner'
 		ksp {
@@ -130,7 +130,7 @@ dependencies {
 		parsersVersion = System.getProperty('parsersVersionOverride')
 	}
 	//noinspection UseTomlInstead
-	implementation("com.github.clquwu:kotatsu-parsers-redo:$parsersVersion") {
+	implementation("com.github.Hynf5:hitori-parsers$parsersVersion") {
 		exclude group: 'org.json', module: 'json'
 	}
 
