@@ -1,6 +1,5 @@
 name: Release Build
 
-# Trigger: manual + tetap bisa trigger dari tag
 on:
   workflow_dispatch:
     inputs:
@@ -13,7 +12,7 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,23 +28,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Get version from tag
-        id: version
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            TAG=${{ github.event.inputs.tag }}
-          else
-            TAG=${GITHUB_REF#refs/tags/}
-          fi
-          VERSION=${TAG#v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Using tag: $TAG"
-
       - name: Decode keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
+        run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
-      - name: Build release APK
+      - name: Build Release APK
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -53,18 +39,12 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      - name: List APK files (DEBUG)
-        run: ls -R app/build/outputs/apk
-
-      - name: Create Release
+      - name: Upload Release APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
-          name: Hitori ${{ steps.version.outputs.version }}
-          draft: false
-          prerelease: false
-          files: |
-            app/build/outputs/apk/release/*.apk
+          name: Hitori Release
+          files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
