@@ -28,10 +28,6 @@ jobs:
           TAG=${GITHUB_REF#refs/tags/}
           VERSION=${TAG#v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          # Extract major.minor.patch and calculate version code
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
-          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
 
       - name: Decode keystore
         run: |
@@ -43,10 +39,10 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          ./gradlew assembleRelease \
-            -PversionName=${{ steps.version.outputs.version }} \
-            -PversionCode=${{ steps.version.outputs.version_code }}
+        run: ./gradlew assembleRelease
+
+      - name: List APK files (DEBUG)
+        run: ls -R app/build/outputs/apk
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -56,11 +52,10 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clean up keystore
         if: always()
         run: rm -f keystore.jks
-        
