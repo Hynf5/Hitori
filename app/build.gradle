@@ -130,7 +130,7 @@ dependencies {
 		parsersVersion = System.getProperty('parsersVersionOverride')
 	}
 	//noinspection UseTomlInstead
-	implementation("com.github.Hynf5:hitori-parsers$parsersVersion") {
+	implementation("com.github.Hynf5:hitori-parsers:$parsersVersion") {
 		exclude group: 'org.json', module: 'json'
 	}
 
