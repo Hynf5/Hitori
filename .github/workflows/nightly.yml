@@ -2,7 +2,7 @@ name: Nightly Build
 
 on:
   schedule:
-    - cron: '0 2 * * 0'
+    - cron: '0 2 * * 0' # Minggu 02:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -15,20 +15,28 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: temurin
+          distribution: 'temurin'
 
       - uses: android-actions/setup-android@v3
 
       - run: chmod +x gradlew
 
-      - name: Build Nightly
+      - name: Build Nightly APK
         run: ./gradlew assembleNightly
 
-      - name: Publish Nightly
+      - name: Generate version
+        id: version
+        run: |
+          DATE=$(date -u +"%Y%m%d")
+          SHA=$(git rev-parse --short=7 HEAD)
+          echo "tag=nightly-$DATE-$SHA" >> $GITHUB_OUTPUT
+          echo "name=Nightly $DATE ($SHA)" >> $GITHUB_OUTPUT
+
+      - name: Publish Nightly Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: nightly-latest
-          name: Nightly Build
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Hitori ${{ steps.version.outputs.name }}
           prerelease: true
           files: app/build/outputs/apk/nightly/*.apk
         env:
