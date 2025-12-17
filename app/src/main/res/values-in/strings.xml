@@ -736,10 +736,10 @@
     <string name="download_new_chapters">Unduh bab baru</string>
     <string name="content_type_novel">Novel</string>
     <string name="content_type_manhwa">Komik Korea (Manhwa)</string>
-    <string name="source_code">Kode sumber</string>
+    <string name="source_code">Kode Hitori</string>
     <string name="download_cellular_confirm">Izinkan mengunduh melalui jaringan seluler?</string>
     <string name="demographics">Demografis</string>
-    <string name="telegram_group">Grup discord</string>
+    <string name="telegram_group">Kode Sumber</string>
     <string name="more_options">Opsi lainnya</string>
     <string name="popular_in_week">Populer minggu ini</string>
     <string name="popular_in_month">Populer bulan ini</string>
