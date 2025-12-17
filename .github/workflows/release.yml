@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to build (e.g., v9.5.6)'
+        description: 'Tag to build (e.g., v9.0)'
         required: true
-        default: 'v9.5.6'
+        default: 'v9.0.0'
   push:
     tags:
       - 'v*'
@@ -56,12 +56,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
-          name: Hitori Release ${{ github.ref_name }}
+          name: Hitori v${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
           body_path: RELEASE_CHANGELOG.md
           files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+    
       - name: Clean up keystore
         if: always()
         run: rm -f keystore.jks
