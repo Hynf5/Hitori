@@ -31,6 +31,19 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
+      # ====== AMBIL CHANGELOG SESUAI TAG ======
+      - name: Extract changelog for tag
+        run: |
+          TAG="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}"
+          echo "Extracting changelog for $TAG"
+
+          sed -n "/^## ${TAG}/,/^## v/p" CHANGELOG.md \
+            | sed '1d;$d' > RELEASE_CHANGELOG.md
+
+          if [ ! -s RELEASE_CHANGELOG.md ]; then
+            echo "No changelog found for $TAG" > RELEASE_CHANGELOG.md
+          fi
+
       - name: Build Release APK
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
@@ -43,7 +56,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
-          name: Hitori Release
+          name: Hitori Release ${{ github.ref_name }}
+          body_path: RELEASE_CHANGELOG.md
           files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
