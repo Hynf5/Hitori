@@ -6,7 +6,7 @@ on:
       tag:
         description: 'Tag to build (e.g., v9.0)'
         required: true
-        default: 'v9.0.0'
+        default: 'v9.0'
   push:
     tags:
       - 'v*'
@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # pastikan ambil semua commit terbaru
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -37,9 +39,14 @@ jobs:
           TAG="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}"
           echo "Extracting changelog for $TAG"
 
-          sed -n "/^## ${TAG}/,/^## v/p" CHANGELOG.md \
-            | sed '1d;$d' > RELEASE_CHANGELOG.md
+          # Pakai awk untuk ambil semua line di bawah header tag sampai header berikutnya
+          awk -v tag="## $TAG" '
+            $0 ~ tag {flag=1; next}      # mulai ambil setelah header tag
+            /^## v/ {flag=0}             # berhenti jika ketemu header versi lain
+            flag {print}                 # print baris yang sesuai
+          ' CHANGELOG.md > RELEASE_CHANGELOG.md
 
+          # Jika kosong, tulis pesan default
           if [ ! -s RELEASE_CHANGELOG.md ]; then
             echo "No changelog found for $TAG" > RELEASE_CHANGELOG.md
           fi
