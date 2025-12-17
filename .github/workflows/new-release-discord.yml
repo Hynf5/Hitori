@@ -2,7 +2,7 @@ name: Discord Release Webhook
 
 on:
   workflow_run:
-    workflows: ["Release Build"]
+    workflows: ["Release Build", "Nightly Build"]
     types:
       - completed
 
@@ -12,14 +12,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get latest release
+      - name: Get latest release for this workflow
         id: release
         uses: actions/github-script@v7
         with:
           script: |
             const { owner, repo } = context.repo;
+
+            // Ambil semua release
             const releases = await github.rest.repos.listReleases({ owner, repo });
-            const r = releases.data[0];
+
+            // Filter release sesuai workflow
+            let r;
+            if (github.event.workflow_run.name === "Nightly Build") {
+              r = releases.data.find(rel => rel.tag_name.startsWith('nightly-'));
+            } else {
+              r = releases.data.find(rel => rel.prerelease === false);
+            }
+
+            if (!r) {
+              throw new Error("No release found for this workflow");
+            }
 
             core.setOutput("tag", r.tag_name);
             core.setOutput("url", r.html_url);
