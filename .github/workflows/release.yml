@@ -19,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # pastikan ambil semua commit terbaru
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -33,20 +33,26 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
+      - name: Validate tag input
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -z "${{ github.event.inputs.tag }}" ]; then
+            echo "Tag input is required"
+            exit 1
+          fi
+
       # ====== AMBIL CHANGELOG SESUAI TAG ======
       - name: Extract changelog for tag
         run: |
           TAG="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}"
           echo "Extracting changelog for $TAG"
 
-          # Pakai awk untuk ambil semua line di bawah header tag sampai header berikutnya
           awk -v tag="## $TAG" '
-            $0 ~ tag {flag=1; next}      # mulai ambil setelah header tag
-            /^## v/ {flag=0}             # berhenti jika ketemu header versi lain
-            flag {print}                 # print baris yang sesuai
+            $0 ~ tag {flag=1; next}
+            /^## v/ {flag=0}
+            flag {print}
           ' CHANGELOG.md > RELEASE_CHANGELOG.md
 
-          # Jika kosong, tulis pesan default
           if [ ! -s RELEASE_CHANGELOG.md ]; then
             echo "No changelog found for $TAG" > RELEASE_CHANGELOG.md
           fi
@@ -68,7 +74,7 @@ jobs:
           files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
       - name: Clean up keystore
         if: always()
         run: rm -f keystore.jks
