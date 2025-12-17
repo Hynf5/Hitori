@@ -17,25 +17,18 @@ jobs:
       - name: Check for changes since last nightly
         id: check
         run: |
-          # Get the date of the last nightly release
-          LAST_NIGHTLY=$(gh release list --limit 100 | grep -i "nightly\|^N[0-9]" | head -1)
-          
+          LAST_NIGHTLY=$(gh release list --limit 100 | grep -i "nightly" | head -1)
+
           if [ -z "$LAST_NIGHTLY" ]; then
-            # No previous nightly, proceed with build
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
-            # Extract the release tag (first column)
             LAST_TAG=$(echo "$LAST_NIGHTLY" | awk '{print $1}')
-            
-            # Check if there are commits since this tag
             COMMIT_COUNT=$(git rev-list "$LAST_TAG"..HEAD --count 2>/dev/null || echo "0")
-            
+
             if [ "$COMMIT_COUNT" -gt 0 ]; then
               echo "has_changes=true" >> $GITHUB_OUTPUT
-              echo "Found $COMMIT_COUNT commits since last nightly ($LAST_TAG)"
             else
               echo "has_changes=false" >> $GITHUB_OUTPUT
-              echo "No changes since last nightly ($LAST_TAG)"
             fi
           fi
         env:
@@ -60,8 +53,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Decode keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
+        run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
       - name: Build nightly APK
         env:
@@ -71,21 +63,37 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleNightly
 
+      # ===== AMBIL COMMIT LOG =====
+      - name: Generate nightly changelog
+        run: |
+          LAST_NIGHTLY=$(gh release list --limit 100 | grep -i "nightly" | head -1 | awk '{print $1}')
+
+          echo "## Changes" > NIGHTLY_CHANGELOG.md
+
+          if [ -z "$LAST_NIGHTLY" ]; then
+            git log --pretty=format:"- %s (%h)" -n 20 >> NIGHTLY_CHANGELOG.md
+          else
+            git log "$LAST_NIGHTLY"..HEAD --pretty=format:"- %s (%h)" >> NIGHTLY_CHANGELOG.md
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Get version
         id: version
         run: |
-          # Use short commit SHA for nightly tag
           COMMIT_SHA=$(git rev-parse --short=7 HEAD)
-          DATE=$(date -u +"%Y%m%d")
-          echo "version=nightly-$DATE-$COMMIT_SHA" >> $GITHUB_OUTPUT
-          echo "display_name=Nightly $DATE ($COMMIT_SHA)" >> $GITHUB_OUTPUT
+          TAG_DATE=$(date -u +"%Y%m%d")
+          TITLE_DATE=$(date -u +"%d/%m/%Y")
+
+          echo "version=nightly-$TAG_DATE-$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "display_name=Nightly $TITLE_DATE" >> $GITHUB_OUTPUT
 
       - name: Create Nightly Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: Hitori ${{ steps.version.outputs.display_name }}
-          draft: false
+          body_path: NIGHTLY_CHANGELOG.md
           prerelease: true
           files: |
             app/build/outputs/apk/nightly/app-nightly.apk
