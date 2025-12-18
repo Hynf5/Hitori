@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Get short commit hash
         id: commit
-        run: echo "short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        run: echo "short=${GITHUB_SHA::10}" >> $GITHUB_OUTPUT
 
       - name: Send commit notification to Discord
         uses: tsickert/discord-webhook@v7.0.0
@@ -32,7 +32,7 @@ jobs:
             🌿 **Branch:** `${{ github.ref_name }}`
             🔖 **Commit:** [`${{ steps.commit.outputs.short }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
 
-            📝 **Message**
+            📝 **Message:**
             > **${{ github.event.head_commit.message }}**
 
           embed-color: 5793266
