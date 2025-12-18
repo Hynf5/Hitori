@@ -7,6 +7,10 @@ on:
       - completed
 
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Tag release (contoh: v1.2.0)"
+        required: true
 
 jobs:
   notify:
@@ -17,18 +21,33 @@ jobs:
 
     steps:
       # ===============================
-      # 1️⃣ GET LATEST RELEASE
+      # 1️⃣ GET RELEASE
       # ===============================
-      - name: Get latest release
+      - name: Get release
         id: release
         uses: actions/github-script@v7
         with:
           script: |
             const { owner, repo } = context.repo;
-            const releases = await github.rest.repos.listReleases({ owner, repo });
-            const r = releases.data[0];
 
-            if (!r) throw new Error("No release found");
+            const inputTag = context.payload.inputs?.release_tag;
+            let r;
+
+            if (inputTag) {
+              // workflow_dispatch → pakai tag yang dipilih
+              const res = await github.rest.repos.getReleaseByTag({
+                owner,
+                repo,
+                tag: inputTag
+              });
+              r = res.data;
+            } else {
+              // workflow_run → ambil latest release
+              const releases = await github.rest.repos.listReleases({ owner, repo });
+              r = releases.data[0];
+            }
+
+            if (!r) throw new Error("Release not found");
 
             const apk = r.assets.find(a => a.name.endsWith(".apk"));
 
