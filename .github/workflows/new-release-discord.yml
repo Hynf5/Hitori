@@ -50,13 +50,14 @@ jobs:
           content: "<@&1450527196593651792>"
 
           embed-title: "🚀 New Release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
-          embed-url: "${{ steps.release.outputs.url }}"
+          #embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
-          embed-author-name: "${{ github.actor }}"
-          embed-author-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "Hitori ${{ steps.release.outputs.tag }}"
+          #embed-author-name: "${{ github.actor }}"
+          #embed-author-icon-url: "https://github.com/${{ github.actor }}.png"
+          embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
+          embed-footer-text: "${{ github.actor }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
@@ -77,7 +78,7 @@ jobs:
 
           
           embed-description: |
-            **📥 [Download Hitori APK](${{ steps.release.outputs.url }})**
+            ### **📥 [Download Hitori APK](${{ steps.release.outputs.url }})**
           embed-color: 12058646
 
       # ===============================
