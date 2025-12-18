@@ -1,3 +1,7 @@
+## v9.1.1
+🔧 Perbaikan Sumber
+- Memperbaiki masalah teknis yang menyebabkan sumber Kumopoi tidak muncul di daftar.
+
 ## v9.1
 🔄 Pembaruan Domain.
 - Sinkronisasi ulang domain terbaru untuk:
