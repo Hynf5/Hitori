@@ -49,14 +49,25 @@ jobs:
 
             if (!r) throw new Error("Release not found");
 
+            // === ambil commit SHA dari tag (7 huruf) ===
+            const tagRef = await github.rest.git.getRef({
+              owner,
+              repo,
+              ref: `tags/${r.tag_name}`
+            });
+
+            const shortSha = tagRef.data.object.sha.substring(0, 7);
+
             const apk = r.assets.find(a => a.name.endsWith(".apk"));
 
             core.setOutput("tag", r.tag_name);
             core.setOutput("url", r.html_url);
             core.setOutput("body", r.body || "No changelog");
+            core.setOutput("commit", shortSha);
             core.setOutput("prerelease", String(r.prerelease));
             core.setOutput("published", r.published_at);
             core.setOutput("apk", apk ? apk.browser_download_url : r.html_url);
+
 
       # ===============================
       # 2️⃣ STABLE RELEASE EMBED
@@ -69,14 +80,14 @@ jobs:
           content: "<@&1450527196593651792>"
 
           embed-title: "🚀 New Release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
-          #embed-url: "${{ steps.release.outputs.url }}"
+          embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
           #embed-author-name: "${{ github.actor }}"
           #embed-author-icon-url: "https://github.com/${{ github.actor }}.png"
           embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "${{ github.actor }}"
+          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }} "
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
@@ -97,7 +108,7 @@ jobs:
 
           
           embed-description: |
-            ### **📥 [Download Hitori APK](${{ steps.release.outputs.url }})**
+            ### **📥 [Download Hitori](${{ steps.release.outputs.url }})**
           embed-color: 12058646
 
       # ===============================
