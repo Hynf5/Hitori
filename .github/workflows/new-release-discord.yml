@@ -48,7 +48,8 @@ jobs:
           embed-title: "🚀 New Release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
-          embed-color: 3447003
+          embed-color: 12058646
+          embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
           embed-author-name: "${{ github.actor }}"
           embed-author-icon-url: "https://github.com/${{ github.actor }}.png"
           embed-footer-text: "Release published"
@@ -62,17 +63,18 @@ jobs:
         run: sleep 1
 
       # ===============================
-      # 4️⃣ DOWNLOAD MESSAGE 
+      # 4️⃣ DOWNLOAD EMBED
       # ===============================
-      - name: Send Download Hitori
+      - name: Send Download Hitori (Embed)
         if: ${{ steps.release.outputs.prerelease == 'false' }}
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-          content: |
-            **Hitori ${{ steps.release.outputs.tag }} Downloads:**
 
-            • **⬇️ [Download Hitori APK](${{ steps.release.outputs.apk }})**
+          embed-title: "Downloads"
+          embed-description: |
+            **📥 [Download Hitori APK](${{ secrets.RELEASE_URL }})**
+          embed-color: 12058646
 
       # ===============================
       # 5️⃣ PRE-RELEASE EMBED
