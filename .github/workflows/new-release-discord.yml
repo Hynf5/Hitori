@@ -52,7 +52,7 @@ jobs:
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
           embed-author-name: "${{ github.actor }}"
           embed-author-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "Release published"
+          embed-footer-text: "Hitori ${{ steps.release.outputs.tag }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
@@ -71,7 +71,7 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
 
-          embed-title: "Downloads"
+          
           embed-description: |
             **📥 [Download Hitori APK](${{ secrets.RELEASE_URL }})**
           embed-color: 12058646
