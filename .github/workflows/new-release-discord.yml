@@ -73,7 +73,7 @@ jobs:
 
           
           embed-description: |
-            **📥 [Download Hitori APK](${{ secrets.RELEASE_URL }})**
+            **📥 [Download Hitori APK](${{ steps.release.outputs.url }})**
           embed-color: 12058646
 
       # ===============================
