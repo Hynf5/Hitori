@@ -21,6 +21,7 @@ jobs:
 
           embed-title: "🧩 Commit Update"
           embed-url: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+          embed-thumbnail-url: "${{ secrets.COMMIT_THUMBNAIL_URL }}"
 
           # Identitas committer
           embed-author-name: ${{ github.actor }}
@@ -32,7 +33,7 @@ jobs:
             🔖 **Commit:** [`${{ steps.commit.outputs.short }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
 
             📝 **Message**
-            >>> **${{ github.event.head_commit.message }}**
+            > **${{ github.event.head_commit.message }}**
 
           embed-color: 5793266
           embed-footer-text: GitHub • Commit
