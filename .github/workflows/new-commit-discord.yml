@@ -1,4 +1,4 @@
-name: Discord · Push Event
+name: Discord · Commit Notification
 
 on:
   push:
@@ -10,27 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send push event to Discord
+      - name: Send commit notification to Discord
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-          embed-title: "GitHub Push Event"
-          embed-url: ${{ github.event.compare }}
+          embed-title: "📦 New Commit"
+          embed-url: ${{ github.event.head_commit.url }}
 
           embed-description: |
             **Repository:** `${{ github.repository }}`
             **Branch:** `${{ github.ref_name }}`
-            **Actor:** `${{ github.actor }}`
-            **Commit SHA:** `${{ github.sha }}`
+            **Author:** `${{ github.actor }}`
 
-            **Commit Message**
-            ```
-            ${{ github.event.head_commit.message }}
-            ```
+            **Message:**
+            > ${{ github.event.head_commit.message }}
 
-          embed-color: 3553599
+          embed-color: 7506394
 
-          embed-footer-text: "GitHub Actions · CI Notification"
+          embed-footer-text: "GitHub • Commit"
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
 
