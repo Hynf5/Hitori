@@ -19,7 +19,7 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-          embed-title: "🧩 Commit Update"
+          embed-title: "🧩 Commit Update: ${{ github.event.repository.name }}"
           embed-url: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
           embed-thumbnail-url: "${{ secrets.COMMIT_THUMBNAIL_URL }}"
 
