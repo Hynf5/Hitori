@@ -24,8 +24,8 @@ jobs:
           embed-thumbnail-url: "${{ secrets.COMMIT_THUMBNAIL_URL }}"
 
           # Identitas committer
-          embed-author-name: ${{ github.actor }}
-          embed-author-icon-url: https://github.com/${{ github.actor }}.png
+          #embed-author-name: ${{ github.actor }}
+          #embed-author-icon-url: https://github.com/${{ github.actor }}.png
 
           embed-description: |
             📁 **Repo:** `${{ github.repository }}`
@@ -36,5 +36,6 @@ jobs:
             > **${{ github.event.head_commit.message }}**
 
           embed-color: 5793266
-          embed-footer-text: GitHub • Commit
+          embed-footer-icon-url: https://github.com/${{ github.actor }}.png
+          embed-footer-text: ${{ github.actor }}
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
