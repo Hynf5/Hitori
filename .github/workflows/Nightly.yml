@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       changelog:
-        description: 'Isi changelog Nightly (multi-line diperbolehkan)'
+        description: 'Isi changelog Nightly (gunakan ";" untuk pisah baris, misal: "- Fix Manga;- Fix Parsers;- Fix Doujin")'
         required: true
 
 jobs:
@@ -39,7 +39,10 @@ jobs:
 
       - name: Update Changelog
         run: |
-          NEW_LOG="## Changelog Nightly $(date -u +'%d/%m/%Y')\n${{ github.event.inputs.changelog }}"
+          # Ambil input changelog dan ubah delimiter ';' jadi line break
+          INPUT="${{ github.event.inputs.changelog }}"
+          FORMATTED_LOG=$(echo "$INPUT" | sed 's/;/\n/g')
+          NEW_LOG="## Changelog Nightly $(date -u +'%d/%m/%Y')\n$FORMATTED_LOG"
 
           if [ -f NIGHTLY_CHANGELOG.md ]; then
             OLD_LOG=$(cat NIGHTLY_CHANGELOG.md)
