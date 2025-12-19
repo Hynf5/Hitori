@@ -1,7 +1,7 @@
-## v9.2
+## v9.1.2
 🔧 Perbaikan Sumber
-- Sinkronisasi ulang domain terbaru untuk:
-  - ManhwaLAND.ink
+- Sinkronisasi domain terbaru:
+  - ManhwaLAND.ink (Terkadang Eror 🗿)
   - LepoyTL
   - ManhwaList
     
