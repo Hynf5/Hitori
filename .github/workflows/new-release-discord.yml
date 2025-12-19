@@ -14,11 +14,11 @@ on:
       release_type:
         description: "Pilih jenis rilis"
         required: true
-        default: "Release"
+        default: "release"
         type: choice
         options:
-          - Release
-          - Pre-release
+          - release
+          - prerelease
 
 jobs:
   notify:
