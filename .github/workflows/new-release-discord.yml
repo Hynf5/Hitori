@@ -43,6 +43,8 @@ jobs:
 
             const shortSha = tagRef.data.object.sha.substring(0, 7);
             const apk = r.assets.find(a => a.name.endsWith(".apk"));
+            const author = r.author?.login || "Unknown";
+            const authorAvatar = r.author?.avatar_url || "";
 
             core.setOutput("tag", r.tag_name);
             core.setOutput("url", r.html_url);
@@ -51,6 +53,8 @@ jobs:
             core.setOutput("prerelease", String(r.prerelease));
             core.setOutput("published", r.published_at);
             core.setOutput("apk", apk ? apk.browser_download_url : r.html_url);
+            core.setOutput("author", author);
+            core.setOutput("author_avatar", authorAvatar);
 
       # ===============================
       # 2️⃣ STABLE RELEASE EMBED
@@ -67,8 +71,8 @@ jobs:
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
-          embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "${{ github.actor }} 🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}.png"
+          embed-footer-text: "${{ steps.release.outputs.author }}🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
@@ -92,12 +96,12 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
 
-          embed-title: "🧪 Nightly Build: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
+          embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
-          embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "${{ github.actor }} 🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
+          embed-footer-text: "${{ steps.release.outputs.author }}🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       
