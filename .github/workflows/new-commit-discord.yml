@@ -33,7 +33,7 @@ jobs:
             🔖 **Commit:** [`${{ steps.commit.outputs.short }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
 
             📝 **Message:**
-            > **${{ github.event.head_commit.message }}**
+            > ${{ github.event.head_commit.message }}
 
           embed-color: 5793266
           embed-footer-icon-url: https://github.com/${{ github.actor }}.png
