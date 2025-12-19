@@ -31,14 +31,6 @@ jobs:
             > 🌿 **Branch:** `${{ github.ref_name }}`
             > 🔖 **Commit:** [`${{ steps.commit.outputs.short }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
 
-          embed-fields: |
-           [
-             {
-                "name": "📝 Message",
-                "value": "> ${{ github.event.head_commit.message }}",
-                "inline": false
-             }
-           ]
           embed-color: 14568502
           #embed-footer-icon-url: https://github.com/${{ github.actor }}.png
           #embed-footer-text: ${{ github.actor }}
