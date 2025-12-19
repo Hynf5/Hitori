@@ -56,8 +56,8 @@ jobs:
         id: names
         run: |
           if [ "${{ github.event.inputs.release_type }}" == "pre-release" ]; then
-            DISPLAY_NAME="Nightly $(date -u +'%d/%m/%Y')"
-            TAG_NAME="Nightly-$(date -u +'%d%m%Y')"
+            DISPLAY_NAME="Nightly $(TZ=Asia/Jakarta date +'%d/%m/%Y')"
+            TAG_NAME="Nightly-$(TZ=Asia/Jakarta date +'%d%m%Y')"
           else
             if [ -z "${{ github.event.inputs.tag }}" ]; then
               echo "ERROR: Tag wajib diisi untuk Stable release"
