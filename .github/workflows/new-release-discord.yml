@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Tag release (contoh: v9.0 & Nightly-19122025)"
+        description: "Tag release (contoh: v9.0)"
         required: true
       release_type:
         description: "Pilih jenis rilis"
