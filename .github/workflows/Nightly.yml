@@ -2,46 +2,20 @@ name: Nightly Build
 
 on:
   workflow_dispatch:
-  
+    inputs:
+      changelog:
+        description: 'Isi changelog Nightly (multi-line diperbolehkan)'
+        required: true
+
 jobs:
-  check-changes:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      has_changes: ${{ steps.check.outputs.has_changes }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Check for changes since last nightly
-        id: check
-        run: |
-          LAST_NIGHTLY=$(gh release list --limit 100 | grep -i "nightly" | head -1)
-
-          if [ -z "$LAST_NIGHTLY" ]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          else
-            LAST_TAG=$(echo "$LAST_NIGHTLY" | awk '{print $1}')
-            COMMIT_COUNT=$(git rev-list "$LAST_TAG"..HEAD --count 2>/dev/null || echo "0")
-
-            if [ "$COMMIT_COUNT" -gt 0 ]; then
-              echo "has_changes=true" >> $GITHUB_OUTPUT
-            else
-              echo "has_changes=false" >> $GITHUB_OUTPUT
-            fi
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build:
-    needs: check-changes
-    if: needs.check-changes.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -63,29 +37,24 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleNightly
 
-      # ===== AMBIL COMMIT LOG =====
-      - name: Generate nightly changelog
+      - name: Update Changelog
         run: |
-          LAST_NIGHTLY=$(gh release list --limit 100 | grep -i "nightly" | head -1 | awk '{print $1}')
+          NEW_LOG="## Changelog Nightly $(date -u +'%d/%m/%Y')\n${{ github.event.inputs.changelog }}"
 
-          echo "## Changes" > NIGHTLY_CHANGELOG.md
-
-          if [ -z "$LAST_NIGHTLY" ]; then
-            git log --pretty=format:"- %s (%h)" -n 20 >> NIGHTLY_CHANGELOG.md
+          if [ -f NIGHTLY_CHANGELOG.md ]; then
+            OLD_LOG=$(cat NIGHTLY_CHANGELOG.md)
+            echo -e "$NEW_LOG\n\n$OLD_LOG" > NIGHTLY_CHANGELOG.md
           else
-            git log "$LAST_NIGHTLY"..HEAD --pretty=format:"- %s (%h)" >> NIGHTLY_CHANGELOG.md
+            echo -e "$NEW_LOG" > NIGHTLY_CHANGELOG.md
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get version
         id: version
         run: |
-          COMMIT_SHA=$(git rev-parse --short=7 HEAD)
           TAG_DATE=$(date -u +"%Y%m%d")
           TITLE_DATE=$(date -u +"%d/%m/%Y")
 
-          echo "version=nightly-$TAG_DATE-$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "version=nightly-$TAG_DATE" >> $GITHUB_OUTPUT
           echo "display_name=Nightly $TITLE_DATE" >> $GITHUB_OUTPUT
 
       - name: Create Nightly Release
