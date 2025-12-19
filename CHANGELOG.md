@@ -1,3 +1,15 @@
+## v9.2
+🔧 Perbaikan Sumber
+- Sinkronisasi ulang domain terbaru untuk:
+  - ManhwaLAND.ink
+  - LepoyTL
+  - ManhwaList
+    
+🧩 Sumber Baru (New Sources).
+- Penambahan sumber baru:
+  - 1stkissmanga (Alternatif Domain/Url)
+  - KlikManga
+
 ## v9.1.1
 🔧 Perbaikan Sumber
 - Memperbaiki masalah teknis yang menyebabkan sumber Kumopoi tidak muncul di daftar.
