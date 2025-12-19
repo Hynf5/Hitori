@@ -9,16 +9,16 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Tag release (contoh: v1.2.0)"
+        description: "Tag release (contoh: v9.0 & Nightly-19122025)"
         required: true
       release_type:
         description: "Pilih jenis rilis"
         required: true
-        default: "release"
+        default: "Release"
         type: choice
         options:
-          - release
-          - prerelease
+          - Release
+          - Pre-release
 
 jobs:
   notify:
@@ -130,26 +130,26 @@ jobs:
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
           #embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
-          #embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "+${{ steps.release.outputs.commit }}"
+          embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
+          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
       # 6️⃣ DELAY
       # ===============================
-      - name: Wait 1 second
-        if: ${{ steps.release.outputs.prerelease == 'true' }}
-        run: sleep 1
+      #- name: Wait 1 second
+        #if: ${{ steps.release.outputs.prerelease == 'true' }}
+        #run: sleep 1
 
       # ===============================
       # 7️⃣ PRE-RELEASE DOWNLOAD EMBED
       # ===============================
-      - name: Send Pre-release Download Embed
-        if: ${{ steps.release.outputs.prerelease == 'true' }}
-        uses: tsickert/discord-webhook@v7.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-          embed-description: |
-             **📥 [Download Nightly Build](${{ steps.release.outputs.url }})**
-          embed-color: 15105570
+      #- name: Send Pre-release Download Embed
+        #if: ${{ steps.release.outputs.prerelease == 'true' }}
+        #uses: tsickert/discord-webhook@v7.0.0
+        #with:
+          #webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+          #embed-description: |
+             #**📥 [Download Nightly Build](${{ steps.release.outputs.url }})**
+          #embed-color: 15105570
           
