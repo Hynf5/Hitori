@@ -108,6 +108,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+          - name: Trigger Discord notification
+  uses: peter-evans/repository-dispatch@v3
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    event-type: new-release
+    client-payload: |
+      {
+        "tag": "${{ steps.names.outputs.tag_name }}",
+        "prerelease": "${{ github.event.inputs.release_type == 'pre-release' }}"
+      }
+
       - name: Clean up keystore
         if: always()
         run: rm -f keystore.jks
