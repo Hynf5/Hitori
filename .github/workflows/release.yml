@@ -52,27 +52,40 @@ jobs:
           echo "display_name=$DISPLAY_NAME" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      - name: Prepare changelog
-        id: prepare
-        run: |
-          if [ "${{ github.event.inputs.release_type }}" == "pre-release" ]; then
-            # Ambil input dari UI untuk Nightly changelog
-            INPUT="${{ github.event.inputs.nightly_changelog }}"
-            FORMATTED_LOG=$(echo "$INPUT" | sed 's/;/\n/g')
+- name: Prepare changelog
+  id: prepare
+  run: |
+    if [ "${{ github.event.inputs.release_type }}" == "pre-release" ]; then
+      INPUT="${{ github.event.inputs.nightly_changelog }}"
+      FORMATTED_LOG=$(echo "$INPUT" | sed 's/;/\n/g')
 
-            if [ -f NIGHTLY_CHANGELOG.md ]; then
-              OLD_LOG=$(cat NIGHTLY_CHANGELOG.md)
-              echo -e "$FORMATTED_LOG\n\n$OLD_LOG" > NIGHTLY_CHANGELOG.md
-            else
-              echo -e "$FORMATTED_LOG" > NIGHTLY_CHANGELOG.md
-            fi
+      if [ -f NIGHTLY_CHANGELOG.md ]; then
+        OLD_LOG=$(cat NIGHTLY_CHANGELOG.md)
+        echo -e "$FORMATTED_LOG\n\n$OLD_LOG" > NIGHTLY_CHANGELOG.md
+      else
+        echo -e "$FORMATTED_LOG" > NIGHTLY_CHANGELOG.md
+      fi
 
-            CHANGELOG_FILE="NIGHTLY_CHANGELOG.md"
-          else
-            CHANGELOG_FILE="RELEASE_CHANGELOG.md"
-          fi
-          echo "Using changelog file: $CHANGELOG_FILE"
-          echo "changelog_file=$CHANGELOG_FILE" >> $GITHUB_OUTPUT
+      CHANGELOG_FILE="NIGHTLY_CHANGELOG.md"
+
+    else
+      TAG="${{ github.event.inputs.tag }}"
+
+      awk -v tag="## $TAG" '
+        $0 ~ tag {flag=1; next}
+        /^## v/ {flag=0}
+        flag {print}
+      ' CHANGELOG.md > RELEASE_CHANGELOG.md
+
+      if [ ! -s RELEASE_CHANGELOG.md ]; then
+        echo "No changelog found for $TAG" > RELEASE_CHANGELOG.md
+      fi
+
+      CHANGELOG_FILE="RELEASE_CHANGELOG.md"
+    fi
+
+    echo "changelog_file=$CHANGELOG_FILE" >> $GITHUB_OUTPUT
+
 
       - name: Build APK
         env:
