@@ -3,18 +3,24 @@ name: Release Build
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Tag to build (e.g., v9.0)'
+      release_type:
+        description: 'Pilih tipe release'
         required: true
-        default: 'v9.0'
-  push:
-    tags:
-      - 'v*'
+        default: 'pre-release'
+        type: choice
+        options:
+          - pre-release
+          - release
+      tag:
+        description: 'Tag untuk release (misal v9.2)'
+        required: false
+      nightly_changelog:
+        description: 'Isi changelog Nightly (gunakan ";" untuk pisah baris, hanya untuk Pre-release)'
+        required: false
 
 jobs:
   release:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,31 +39,42 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
-      - name: Validate tag input
-        if: github.event_name == 'workflow_dispatch'
+      - name: Get release names
+        id: names
         run: |
-          if [ -z "${{ github.event.inputs.tag }}" ]; then
-            echo "Tag input is required"
-            exit 1
+          if [ "${{ github.event.inputs.release_type }}" == "pre-release" ]; then
+            DISPLAY_NAME="Nightly $(date -u +'%d/%m/%Y')"
+            TAG_NAME="nightly-$(date -u +'%Y%m%d')"
+          else
+            DISPLAY_NAME="Hitori ${{ github.event.inputs.tag }}"
+            TAG_NAME="${{ github.event.inputs.tag }}"
           fi
+          echo "display_name=$DISPLAY_NAME" >> $GITHUB_OUTPUT
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      # ====== AMBIL CHANGELOG SESUAI TAG ======
-      - name: Extract changelog for tag
+      - name: Prepare changelog
         run: |
-          TAG="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}"
-          echo "Extracting changelog for $TAG"
+          if [ "${{ github.event.inputs.release_type }}" == "pre-release" ]; then
+            # Ambil input dari UI untuk Nightly changelog
+            INPUT="${{ github.event.inputs.nightly_changelog }}"
+            FORMATTED_LOG=$(echo "$INPUT" | sed 's/;/\n/g')
+            NEW_LOG="## Changelog Nightly $(date -u +'%d/%m/%Y')\n$FORMATTED_LOG"
 
-          awk -v tag="## $TAG" '
-            $0 ~ tag {flag=1; next}
-            /^## v/ {flag=0}
-            flag {print}
-          ' CHANGELOG.md > RELEASE_CHANGELOG.md
+            if [ -f NIGHTLY_CHANGELOG.md ]; then
+              OLD_LOG=$(cat NIGHTLY_CHANGELOG.md)
+              echo -e "$NEW_LOG\n\n$OLD_LOG" > NIGHTLY_CHANGELOG.md
+            else
+              echo -e "$NEW_LOG" > NIGHTLY_CHANGELOG.md
+            fi
 
-          if [ ! -s RELEASE_CHANGELOG.md ]; then
-            echo "No changelog found for $TAG" > RELEASE_CHANGELOG.md
+            CHANGELOG_FILE="NIGHTLY_CHANGELOG.md"
+          else
+            CHANGELOG_FILE="RELEASE_CHANGELOG.md"
           fi
+          echo "Using changelog file: $CHANGELOG_FILE"
+          echo "changelog_file=$CHANGELOG_FILE" >> $GITHUB_OUTPUT
 
-      - name: Build Release APK
+      - name: Build APK
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -68,9 +85,10 @@ jobs:
       - name: Upload Release APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
-          name: Hitori ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
-          body_path: RELEASE_CHANGELOG.md
+          tag_name: ${{ steps.names.outputs.tag_name }}
+          name: ${{ steps.names.outputs.display_name }}
+          body_path: ${{ steps.prepare.outputs.changelog_file }}
+          prerelease: ${{ github.event.inputs.release_type == 'pre-release' }}
           files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
