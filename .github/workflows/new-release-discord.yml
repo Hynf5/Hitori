@@ -129,9 +129,9 @@ jobs:
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
-          embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
-          embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }} | Pre-release build"
+          #embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
+          #embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
+          embed-footer-text: "+${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
@@ -150,6 +150,6 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
           embed-description: |
-            ### **📥 [Download Pre-Release Build](${{ steps.release.outputs.url }})**
+             **📥 [Download Nightly Build](${{ steps.release.outputs.url }})**
           embed-color: 15105570
           
