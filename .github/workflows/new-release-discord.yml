@@ -1,60 +1,39 @@
 name: Discord Release Webhook
 
 on:
-  workflow_run:
-    workflows: ["Release Build"]
-    types:
-      - completed
-
-  workflow_dispatch:
-    inputs:
-      release_tag:
-        description: "Tag release (contoh: v9.0)"
-        required: true
-      release_type:
-        description: "Pilih jenis rilis"
-        required: true
-        default: "release"
-        type: choice
-        options:
-          - release
-          - prerelease
+  repository_dispatch:
+    types: [new-release]
 
 jobs:
   notify:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     steps:
       # ===============================
-      # 1️⃣ GET RELEASE
+      # 1️⃣ GET RELEASE BY TAG (PASTI BENAR)
       # ===============================
-      - name: Get release
+      - name: Get release by tag
         id: release
         uses: actions/github-script@v7
         with:
           script: |
             const { owner, repo } = context.repo;
 
-            const inputTag = context.payload.inputs?.release_tag;
-            const inputType = context.payload.inputs?.release_type;
-            let r;
+            const payload = context.payload.client_payload;
+            const tag = payload.tag;
+            const isPrerelease = payload.prerelease === 'true' || payload.prerelease === true;
 
-            if (inputTag) {
-              const res = await github.rest.repos.getReleaseByTag({
-                owner,
-                repo,
-                tag: inputTag
-              });
-              r = res.data;
-            } else {
-              const releases = await github.rest.repos.listReleases({ owner, repo });
-              r = releases.data[0];
+            if (!tag) {
+              throw new Error("Missing tag in repository_dispatch payload");
             }
 
-            if (!r) throw new Error("Release not found");
+            const res = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag
+            });
+
+            const r = res.data;
 
             const tagRef = await github.rest.git.getRef({
               owner,
@@ -65,23 +44,18 @@ jobs:
             const shortSha = tagRef.data.object.sha.substring(0, 7);
             const apk = r.assets.find(a => a.name.endsWith(".apk"));
 
-            const isPrerelease =
-              context.eventName === "workflow_dispatch"
-                ? inputType === "prerelease"
-                : r.prerelease;
-
             core.setOutput("tag", r.tag_name);
             core.setOutput("url", r.html_url);
-            core.setOutput("body", r.body || "No changelog");
+            core.setOutput("body", r.body || "No changelog provided.");
             core.setOutput("commit", shortSha);
-            core.setOutput("prerelease", String(isPrerelease));
+            core.setOutput("prerelease", String(r.prerelease));
             core.setOutput("published", r.published_at);
             core.setOutput("apk", apk ? apk.browser_download_url : r.html_url);
 
       # ===============================
       # 2️⃣ STABLE RELEASE EMBED
       # ===============================
-      - name: Send RELEASE embed to Discord
+      - name: Send STABLE release embed
         if: ${{ steps.release.outputs.prerelease == 'false' }}
         uses: tsickert/discord-webhook@v7.0.0
         with:
@@ -94,20 +68,13 @@ jobs:
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
           embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-text: "${{ github.actor }} 🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
-      # 3️⃣ DELAY
+      # 3️⃣ STABLE DOWNLOAD EMBED
       # ===============================
-      - name: Wait 1 second
-        if: ${{ steps.release.outputs.prerelease == 'false' }}
-        run: sleep 1
-
-      # ===============================
-      # 4️⃣ DOWNLOAD EMBED
-      # ===============================
-      - name: Send Download Hitori (Embed)
+      - name: Send STABLE download embed
         if: ${{ steps.release.outputs.prerelease == 'false' }}
         uses: tsickert/discord-webhook@v7.0.0
         with:
@@ -117,39 +84,20 @@ jobs:
           embed-color: 12058646
 
       # ===============================
-      # 5️⃣ PRE-RELEASE EMBED
+      # 4️⃣ PRE-RELEASE / NIGHTLY EMBED
       # ===============================
-      - name: Send prerelease embed to Discord
+      - name: Send PRE-RELEASE embed
         if: ${{ steps.release.outputs.prerelease == 'true' }}
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
 
-          embed-title: "🧪 Pre-Release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
+          embed-title: "🧪 Nightly Build: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
-          #embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
           embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-text: "${{ github.actor }} 🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
-      # ===============================
-      # 6️⃣ DELAY
-      # ===============================
-      #- name: Wait 1 second
-        #if: ${{ steps.release.outputs.prerelease == 'true' }}
-        #run: sleep 1
-
-      # ===============================
-      # 7️⃣ PRE-RELEASE DOWNLOAD EMBED
-      # ===============================
-      #- name: Send Pre-release Download Embed
-        #if: ${{ steps.release.outputs.prerelease == 'true' }}
-        #uses: tsickert/discord-webhook@v7.0.0
-        #with:
-          #webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-          #embed-description: |
-             #**📥 [Download Nightly Build](${{ steps.release.outputs.url }})**
-          #embed-color: 15105570
-          
+      
