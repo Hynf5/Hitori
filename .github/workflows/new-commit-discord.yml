@@ -32,9 +32,9 @@ jobs:
             > 🔖 **Commit:** [`${{ steps.commit.outputs.short }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
 
           embed-color: 14568502
-          embed-footer-icon-url: https://github.com/${{ github.actor }}.png
-          embed-footer-text: ${{ github.actor }}
-          embed-timestamp: ${{ github.event.head_commit.timestamp }}
+          #embed-footer-icon-url: https://github.com/${{ github.actor }}.png
+          #embed-footer-text: ${{ github.actor }}
+          #embed-timestamp: ${{ github.event.head_commit.timestamp }}
 
       # ===============================
       # 2️⃣ EMBED MESSAGE COMMIT
