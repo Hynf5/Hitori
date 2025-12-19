@@ -11,6 +11,14 @@ on:
       release_tag:
         description: "Tag release (contoh: v1.2.0)"
         required: true
+      release_type:
+        description: "Pilih jenis rilis"
+        required: true
+        default: "release"
+        type: choice
+        options:
+          - release
+          - prerelease
 
 jobs:
   notify:
@@ -31,10 +39,10 @@ jobs:
             const { owner, repo } = context.repo;
 
             const inputTag = context.payload.inputs?.release_tag;
+            const inputType = context.payload.inputs?.release_type;
             let r;
 
             if (inputTag) {
-              // workflow_dispatch → pakai tag yang dipilih
               const res = await github.rest.repos.getReleaseByTag({
                 owner,
                 repo,
@@ -42,14 +50,12 @@ jobs:
               });
               r = res.data;
             } else {
-              // workflow_run → ambil latest release
               const releases = await github.rest.repos.listReleases({ owner, repo });
               r = releases.data[0];
             }
 
             if (!r) throw new Error("Release not found");
 
-            // === ambil commit SHA dari tag (7 huruf) ===
             const tagRef = await github.rest.git.getRef({
               owner,
               repo,
@@ -57,17 +63,20 @@ jobs:
             });
 
             const shortSha = tagRef.data.object.sha.substring(0, 7);
-
             const apk = r.assets.find(a => a.name.endsWith(".apk"));
+
+            const isPrerelease =
+              context.eventName === "workflow_dispatch"
+                ? inputType === "prerelease"
+                : r.prerelease;
 
             core.setOutput("tag", r.tag_name);
             core.setOutput("url", r.html_url);
             core.setOutput("body", r.body || "No changelog");
             core.setOutput("commit", shortSha);
-            core.setOutput("prerelease", String(r.prerelease));
+            core.setOutput("prerelease", String(isPrerelease));
             core.setOutput("published", r.published_at);
             core.setOutput("apk", apk ? apk.browser_download_url : r.html_url);
-
 
       # ===============================
       # 2️⃣ STABLE RELEASE EMBED
@@ -84,10 +93,8 @@ jobs:
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
-          #embed-author-name: "${{ github.actor }}"
-          #embed-author-icon-url: "https://github.com/${{ github.actor }}.png"
           embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }} "
+          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # ===============================
@@ -105,10 +112,8 @@ jobs:
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-
-          
           embed-description: |
-            ### **📥 [Download Hitori](${{ steps.release.outputs.url }})**
+            ### **📥 [Download Hitori Build](${{ steps.release.outputs.url }})**
           embed-color: 12058646
 
       # ===============================
@@ -124,8 +129,27 @@ jobs:
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
-          embed-author-name: "${{ github.actor }}"
-          embed-author-icon-url: "https://github.com/${{ github.actor }}.png"
-          embed-footer-text: "Pre-release build"
+          embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
+          embed-footer-icon-url: "https://github.com/${{ github.actor }}.png"
+          embed-footer-text: "${{ github.actor }}🍃 | +${{ steps.release.outputs.commit }} | Pre-release build"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
+      # ===============================
+      # 6️⃣ DELAY
+      # ===============================
+      - name: Wait 1 second
+        if: ${{ steps.release.outputs.prerelease == 'true' }}
+        run: sleep 1
+
+      # ===============================
+      # 7️⃣ PRE-RELEASE DOWNLOAD EMBED
+      # ===============================
+      - name: Send Pre-release Download Embed
+        if: ${{ steps.release.outputs.prerelease == 'true' }}
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+          embed-description: |
+            ### **📥 [Download Pre-Release Build](${{ steps.release.outputs.url }})**
+          embed-color: 15105570
+          
