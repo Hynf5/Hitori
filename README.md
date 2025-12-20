@@ -1,11 +1,11 @@
-<div align="center">
-
- ## Read!!
+> [!IMPORTANT]
 > **[Hitori](https://github.com/Hynf5/Hitori) is a fork of [Kotatsu-Redo](https://github.com/Kotatsu-Redo/Kotatsu-Redo).**
+>
 > 
 > **Please don’t ask for new sources or parsers.**
 > **I’m not a parser developer — this fork was made mostly out of spare time and curiosity.**
 
+<div align="center">
 
 **[Kotatsu-Redo](https://github.com/Kotatsu-Redo/Kotatsu-Redo) is a free and open-source manga reader for Android with built-in
 online content sources. The main goal of the fork is to maintain existing features and sources.**
