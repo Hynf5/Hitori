@@ -9,42 +9,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ===============================
-      # 1️⃣ GET RELEASE BY TAG (PASTI BENAR)
-      # ===============================
       - name: Get release by tag
         id: release
         uses: actions/github-script@v7
         with:
           script: |
             const { owner, repo } = context.repo;
-
             const payload = context.payload.client_payload;
             const tag = payload.tag;
             const isPrerelease = payload.prerelease === 'true' || payload.prerelease === true;
+            const actor = payload.actor || "Automation";
+            const avatar = `https://github.com/${actor}.png`;
 
-            if (!tag) {
-              throw new Error("Missing tag in repository_dispatch payload");
-            }
+            if (!tag) throw new Error("Missing tag in payload");
 
-            const res = await github.rest.repos.getReleaseByTag({
-              owner,
-              repo,
-              tag
-            });
-
+            const res = await github.rest.repos.getReleaseByTag({ owner, repo, tag });
             const r = res.data;
-
-            const tagRef = await github.rest.git.getRef({
-              owner,
-              repo,
-              ref: `tags/${r.tag_name}`
-            });
-
+            const tagRef = await github.rest.git.getRef({ owner, repo, ref: `tags/${r.tag_name}` });
             const shortSha = tagRef.data.object.sha.substring(0, 7);
             const apk = r.assets.find(a => a.name.endsWith(".apk"));
-            const author = r.author?.login || "Unknown";
-            const authorAvatar = r.author?.avatar_url || "";
 
             core.setOutput("tag", r.tag_name);
             core.setOutput("url", r.html_url);
@@ -53,31 +36,26 @@ jobs:
             core.setOutput("prerelease", String(r.prerelease));
             core.setOutput("published", r.published_at);
             core.setOutput("apk", apk ? apk.browser_download_url : r.html_url);
-            core.setOutput("author", author);
-            core.setOutput("author_avatar", authorAvatar);
+            core.setOutput("author", actor);
+            core.setOutput("author_avatar", avatar);
 
-      # ===============================
-      # 2️⃣ STABLE RELEASE EMBED
-      # ===============================
-      - name: Send STABLE release embed
+      # STABLE EMBED
+      - name: Send RELEASE embed to Discord
         if: ${{ steps.release.outputs.prerelease == 'false' }}
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
           content: "<@&1450527196593651792>"
-
           embed-title: "🚀 New Release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
-          embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}.png"
-          embed-footer-text: "${{ steps.release.outputs.author }}🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
+          embed-footer-text: "${{ steps.release.outputs.author }} 🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
-      # ===============================
-      # 3️⃣ STABLE DOWNLOAD EMBED
-      # ===============================
+      # STABLE DOWNLOAD
       - name: Send STABLE download embed
         if: ${{ steps.release.outputs.prerelease == 'false' }}
         uses: tsickert/discord-webhook@v7.0.0
@@ -87,21 +65,16 @@ jobs:
             ### **📥 [Download Hitori Build](${{ steps.release.outputs.url }})**
           embed-color: 12058646
 
-      # ===============================
-      # 4️⃣ PRE-RELEASE / NIGHTLY EMBED
-      # ===============================
+      # NIGHTLY / PRE-RELEASE EMBED
       - name: Send PRE-RELEASE embed
         if: ${{ steps.release.outputs.prerelease == 'true' }}
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-
           embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
           embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
-          embed-footer-text: "${{ steps.release.outputs.author }}🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-text: "${{ steps.release.outputs.author }} 🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
-
-      
