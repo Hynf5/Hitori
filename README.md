@@ -1,9 +1,10 @@
 > [!IMPORTANT]
 > **[Hitori](https://github.com/Hynf5/Hitori) is a fork of [Kotatsu-Redo](https://github.com/Kotatsu-Redo/Kotatsu-Redo).**
 >
-> 
 > **Please don’t ask for new sources or parsers.**
 > **I’m not a parser developer — this fork was made mostly out of spare time and curiosity.**
+
+---
 
 <div align="center">
 
