@@ -23,17 +23,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ===============================
-      # 1️⃣ CHECKOUT
-      # ===============================
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ===============================
-      # 2️⃣ ENV SETUP
-      # ===============================
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -43,15 +37,9 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # ===============================
-      # 3️⃣ KEYSTORE
-      # ===============================
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
-      # ===============================
-      # 4️⃣ RELEASE IDENTITY (TAG + NAME)
-      # ===============================
       - name: Get release names
         id: names
         run: |
@@ -66,55 +54,36 @@ jobs:
             DISPLAY_NAME="Hitori ${{ github.event.inputs.tag }}"
             TAG_NAME="${{ github.event.inputs.tag }}"
           fi
-
           echo "display_name=$DISPLAY_NAME" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      # ===============================
-      # 5️⃣ CHANGELOG
-      # ===============================
       - name: Prepare changelog
         id: prepare
         run: |
           if [ "${{ github.event.inputs.release_type }}" == "pre-release" ]; then
             INPUT="${{ github.event.inputs.nightly_changelog }}"
-
-            if [ -z "$INPUT" ]; then
-              echo "ERROR: Nightly changelog tidak boleh kosong"
-              exit 1
-            fi
-
             FORMATTED_LOG=$(echo "$INPUT" | sed 's/;/\n/g')
-
             if [ -f NIGHTLY_CHANGELOG.md ]; then
               OLD_LOG=$(cat NIGHTLY_CHANGELOG.md)
               echo -e "$FORMATTED_LOG\n\n$OLD_LOG" > NIGHTLY_CHANGELOG.md
             else
               echo -e "$FORMATTED_LOG" > NIGHTLY_CHANGELOG.md
             fi
-
             CHANGELOG_FILE="NIGHTLY_CHANGELOG.md"
           else
             TAG="${{ github.event.inputs.tag }}"
-
             awk -v tag="## $TAG" '
               $0 ~ tag {flag=1; next}
               /^## v/ {flag=0}
               flag {print}
             ' CHANGELOG.md > RELEASE_CHANGELOG.md
-
             if [ ! -s RELEASE_CHANGELOG.md ]; then
               echo "No changelog found for $TAG" > RELEASE_CHANGELOG.md
             fi
-
             CHANGELOG_FILE="RELEASE_CHANGELOG.md"
           fi
-
           echo "changelog_file=$CHANGELOG_FILE" >> $GITHUB_OUTPUT
 
-      # ===============================
-      # 6️⃣ BUILD APK
-      # ===============================
       - name: Build APK
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
@@ -123,9 +92,6 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      # ===============================
-      # 7️⃣ CREATE GITHUB RELEASE
-      # ===============================
       - name: Upload Release APK
         uses: softprops/action-gh-release@v2
         with:
@@ -137,9 +103,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ===============================
-      # 8️⃣ 🔥 NOTIFY DISCORD (KEY STEP)
-      # ===============================
+      # 🔥 KIRIM PAYLOAD ACTOR KE DISCORD WORKFLOW
       - name: Trigger Discord notification
         uses: peter-evans/repository-dispatch@v3
         with:
@@ -148,12 +112,10 @@ jobs:
           client-payload: |
             {
               "tag": "${{ steps.names.outputs.tag_name }}",
-              "prerelease": "${{ github.event.inputs.release_type == 'pre-release' }}"
+              "prerelease": "${{ github.event.inputs.release_type == 'pre-release' }}",
+              "actor": "${{ github.actor }}"
             }
 
-      # ===============================
-      # 9️⃣ CLEANUP
-      # ===============================
       - name: Clean up keystore
         if: always()
         run: rm -f keystore.jks
