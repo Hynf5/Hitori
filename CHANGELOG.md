@@ -1,5 +1,6 @@
 ## v9.1.3
 - Fix Icons Zoom
+- Fix Monochrome (I Think🫩)
 
 ## v9.1.2
 🔧 Perbaikan Sumber
