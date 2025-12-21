@@ -78,3 +78,16 @@ jobs:
           embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
           embed-footer-text: "${{ steps.release.outputs.author }} 🍃 | +${{ steps.release.outputs.commit }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
+# PRE-RELEASE → CHANNEL 2
+     - name: Send PRE-RELEASE embed (Channel B)
+       if: ${{ steps.release.outputs.prerelease == 'true' }}
+       uses: tsickert/discord-webhook@v7.0.0
+       with:
+         webhook-url: ${{ secrets.DISCORD_NIGHTLY_RELEASE }}
+         embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
+         embed-url: "${{ steps.release.outputs.url }}"
+         embed-description: "${{ steps.release.outputs.body }}"
+         embed-color: 15105570
+         embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
+         embed-footer-text: "${{ steps.release.outputs.author }} 🍃 | +${{ steps.release.outputs.commit }}"
+         embed-timestamp: "${{ steps.release.outputs.published }}"
