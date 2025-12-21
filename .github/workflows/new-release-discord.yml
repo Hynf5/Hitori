@@ -84,6 +84,7 @@ jobs:
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_NIGHTLY_RELEASE }}
+          content: "<@&1452131327762632865>"
           embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
