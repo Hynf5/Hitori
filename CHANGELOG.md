@@ -6,8 +6,8 @@
 - Added WeebDex
 - Added Atsu
 - Bato default url work
+- Improve Logic and UI Feedback
 - Synced with upstream (Kotatsu-Redo & Parsers)
-- Improve Logic and UI Feedback (@MuhamadSyabitHidayattulloh)
 - fix ...
 
 ## v9.1.3
