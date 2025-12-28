@@ -1,3 +1,11 @@
+## v9.1.4
+- Fixed RavenScans
+- Fixed MaidScans
+- Bato default url work
+- Fixed Manga-Starz
+- Synced with upstream (Kotatsu-Redo)
+- Improve Logic and UI Feedback ([@MuhamadSyabitHidayattulloh](https://github.com/MuhamadSyabitHidayattulloh))
+
 ## v9.1.3
 - Fix Icons Zoom
 - Fix Monochrome (I Think🫩)
