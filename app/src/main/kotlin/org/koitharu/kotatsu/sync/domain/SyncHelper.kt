@@ -58,6 +58,10 @@ class SyncHelper @AssistedInject constructor(
 	private val settings: SyncSettings,
 ) {
 
+	private val json = Json {
+		encodeDefaults = true
+	}
+
 	private val authorityHistory = context.getString(R.string.sync_authority_history)
 	private val authorityFavourites = context.getString(R.string.sync_authority_favourites)
 	private val mediaTypeJson = "application/json".toMediaType()
@@ -73,7 +77,7 @@ class SyncHelper @AssistedInject constructor(
 
 	@WorkerThread
 	fun syncFavourites(stats: SyncStats) {
-		val payload = Json.encodeToString(
+		val payload = json.encodeToString(
 			SyncDto(
 				history = null,
 				favourites = getFavourites(),
@@ -103,7 +107,7 @@ class SyncHelper @AssistedInject constructor(
 	@Blocking
 	@WorkerThread
 	fun syncHistory(stats: SyncStats) {
-		val payload = Json.encodeToString(
+		val payload = json.encodeToString(
 			SyncDto(
 				history = getHistory(),
 				favourites = null,
