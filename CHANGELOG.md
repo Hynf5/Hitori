@@ -1,10 +1,14 @@
 ## v9.1.4
 - Fixed RavenScans
 - Fixed MaidScans
-- Bato default url work
 - Fixed Manga-Starz
+- Added Kagane (@paregi12)
+- Added WeebDex
+- Added Atsu
+- Bato default url work
 - Synced with upstream (Kotatsu-Redo & Parsers)
 - Improve Logic and UI Feedback (@MuhamadSyabitHidayattulloh)
+- fix ...
 
 ## v9.1.3
 - Fix Icons Zoom
