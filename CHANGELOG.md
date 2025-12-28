@@ -2,7 +2,7 @@
 - Fixed RavenScans
 - Fixed MaidScans
 - Fixed Manga-Starz
-- Added Kagane (@paregi12)
+- Added Kagane
 - Added WeebDex
 - Added Atsu
 - Bato default url work
