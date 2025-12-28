@@ -3,8 +3,8 @@
 - Fixed MaidScans
 - Bato default url work
 - Fixed Manga-Starz
-- Synced with upstream (Kotatsu-Redo)
-- Improve Logic and UI Feedback ([@MuhamadSyabitHidayattulloh](https://github.com/MuhamadSyabitHidayattulloh))
+- Synced with upstream (Kotatsu-Redo & Parsers)
+- Improve Logic and UI Feedback (@MuhamadSyabitHidayattulloh)
 
 ## v9.1.3
 - Fix Icons Zoom
