@@ -30,6 +30,7 @@ jobs:
             const apk = r.assets.find(a => a.name.endsWith(".apk"));
 
             core.setOutput("tag", r.tag_name);
+            core.setOutput("title", r.name || r.tag_name);
             core.setOutput("url", r.html_url);
             core.setOutput("body", r.body || "No changelog provided.");
             core.setOutput("commit", shortSha);
@@ -71,7 +72,7 @@ jobs:
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-          embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
+          embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.title }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
@@ -85,7 +86,7 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_NIGHTLY_RELEASE }}
           content: "<@&1452131327762632865>"
-          embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.tag }}"
+          embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.title }}"
           embed-url: "${{ steps.release.outputs.url }}"
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
