@@ -92,6 +92,14 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
+      - name: Rename APK for Nightly
+        if: ${{ github.event.inputs.release_type == 'pre-release' }}
+        run: |
+          cd app/build/outputs/apk/release
+          for file in *.apk; do
+            mv "$file" "app-nightly.apk"
+          done
+
       - name: Upload Release APK
         uses: softprops/action-gh-release@v2
         with:
