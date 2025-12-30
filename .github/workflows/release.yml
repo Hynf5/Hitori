@@ -44,11 +44,11 @@ jobs:
         id: names
         run: |
           if [ "${{ github.event.inputs.release_type }}" == "pre-release" ]; then
-            DATE=$(TZ=Asia/Jakarta date +'%Y%m%d')
+            DATE=$(TZ=Asia/Jakarta date +'%d/%m/%Y')
             SHORT_SHA=$(git rev-parse --short HEAD)
 
             DISPLAY_NAME="Nightly ${DATE}"
-            TAG_NAME="nightly-${DATE}-${SHORT_SHA}"
+            TAG_NAME="Nightly-$(TZ=Asia/Jakarta date +'%d%m%Y')-${SHORT_SHA}"
           else
             if [ -z "${{ github.event.inputs.tag }}" ]; then
               echo "ERROR: Tag wajib diisi untuk Stable release"
