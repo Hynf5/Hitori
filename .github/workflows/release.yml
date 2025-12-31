@@ -14,7 +14,7 @@ on:
       tag:
         description: 'Tag untuk release (misal v9.2)'
         required: false
-      release_title:
+      release_title: # <<< BARU: Judul tambahan release opsional (Stable)
         description: 'Judul tambahan release (opsional, hanya untuk Build Stable)'
         required: false
       nightly_changelog:
@@ -60,13 +60,16 @@ jobs:
 
             RAW_TAG="${{ github.event.inputs.tag }}"
             TAG="${RAW_TAG#v}"
-            TITLE="${{ github.event.inputs.release_title }}"
 
+            TITLE="${{ github.event.inputs.release_title }}" # <<< BARU: Ambil input release_title
+
+            # <<< BARU: Set display name sesuai title opsional
             if [ -z "$TITLE" ]; then
                 DISPLAY_NAME="Hitori v${TAG}"
             else
                 DISPLAY_NAME="Hitori v${TAG} - ${TITLE}"
             fi
+
             TAG_NAME="v${TAG}"
           fi
 
@@ -92,6 +95,7 @@ jobs:
             RAW_TAG="${{ github.event.inputs.tag }}"
             TAG="${RAW_TAG#v}"
 
+            # <<< BARU/DIUBAH: awk ambil changelog stable sesuai tag, bisa ada tambahan judul
             awk -v tag="$TAG" '
               $0 ~ ("^## v" tag) {flag=1; next}
               /^## / && $0 !~ ("^## v" tag) {flag=0}
