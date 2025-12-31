@@ -84,10 +84,9 @@ jobs:
             RAW_TAG="${{ github.event.inputs.tag }}"
             TAG="${RAW_TAG#v}"
 
-            awk -v tag="$TAG" '
-              gsub(/[[:space:]]+$/, "", $0)
-              $0 ~ ("\\[?v?" tag "\\]?") {flag=1; next}     
-              /^##/ && $0 !~ ("\\[?v?" tag "\\]?") {flag=0} 
+            awk -v tag="## v${TAG}" '
+              $0 == tag {flag=1; next}
+              /^## v/ {flag=0}
               flag {print}
             ' CHANGELOG.md > RELEASE_CHANGELOG.md
 
