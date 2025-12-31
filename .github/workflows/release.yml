@@ -6,16 +6,19 @@ on:
       release_type:
         description: 'Pilih tipe release'
         required: true
-        default: 'pre-release'
+        default: 'release'
         type: choice
         options:
           - pre-release
           - release
       tag:
-        description: 'Tag untuk release (misal v9.2)'
+        description: 'Tag versi Stable (misal v9.2/9.2)'
+        required: false
+      release_title:
+        description: 'Judul tambahan Stable (Hotfix)'
         required: false
       nightly_changelog:
-        description: 'Isi changelog Nightly (gunakan ";" untuk pisah baris, hanya untuk Pre-release)'
+        description: 'Changelog Pre-release, gunakan ";" untuk pisah baris'
         required: false
 
 jobs:
@@ -58,7 +61,15 @@ jobs:
             RAW_TAG="${{ github.event.inputs.tag }}"
             TAG="${RAW_TAG#v}"
 
-            DISPLAY_NAME="Hitori v${TAG}"
+            TITLE="${{ github.event.inputs.release_title }}"
+
+            # <<< BARU: Set display name sesuai title opsional
+            if [ -z "$TITLE" ]; then
+                DISPLAY_NAME="Hitori v${TAG}"
+            else
+                DISPLAY_NAME="Hitori v${TAG} - ${TITLE}"
+            fi
+
             TAG_NAME="v${TAG}"
           fi
 
@@ -83,7 +94,7 @@ jobs:
           else
             RAW_TAG="${{ github.event.inputs.tag }}"
             TAG="${RAW_TAG#v}"
-
+            
             awk -v tag="$TAG" '
               $0 ~ ("^## v" tag) {flag=1; next}
               /^## / && $0 !~ ("^## v" tag) {flag=0}
