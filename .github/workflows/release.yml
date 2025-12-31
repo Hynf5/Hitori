@@ -14,6 +14,9 @@ on:
       tag:
         description: 'Tag untuk release (misal v9.2)'
         required: false
+      release_title:
+        description: 'Judul tambahan release (opsional, hanya untuk Build Stable)'
+        required: false
       nightly_changelog:
         description: 'Isi changelog Nightly (gunakan ";" untuk pisah baris, hanya untuk Pre-release)'
         required: false
@@ -57,8 +60,13 @@ jobs:
 
             RAW_TAG="${{ github.event.inputs.tag }}"
             TAG="${RAW_TAG#v}"
+            TITLE="${{ github.event.inputs.release_title }}"
 
-            DISPLAY_NAME="Hitori v${TAG}"
+            if [ -z "$TITLE" ]; then
+                DISPLAY_NAME="Hitori v${TAG}"
+            else
+                DISPLAY_NAME="Hitori v${TAG} - ${TITLE}"
+            fi
             TAG_NAME="v${TAG}"
           fi
 
