@@ -85,8 +85,9 @@ jobs:
             TAG="${RAW_TAG#v}"
 
             awk -v tag="$TAG" '
-              $0 ~ "\\[?v?" tag "\\]?" {flag=1; next}     
-              /^##/ && $0 !~ "\\[?v?" tag "\\]?" {flag=0} 
+              gsub(/[[:space:]]+$/, "", $0)
+              $0 ~ ("\\[?v?" tag "\\]?") {flag=1; next}     
+              /^##/ && $0 !~ ("\\[?v?" tag "\\]?") {flag=0} 
               flag {print}
             ' CHANGELOG.md > RELEASE_CHANGELOG.md
 
