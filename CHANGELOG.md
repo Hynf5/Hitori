@@ -1,8 +1,10 @@
 ## v9.1.6
-### 🔀 Upstream 
-- Nothing
-### 📑 Parsers 
-- Nothing
+### 📑 Source
+- Add New ManhwaRead source (by @paregi12, @YakaTeam)
+- Add New Comick UnOfficial Source (by @dragonx943)
+### 🛠️ Fix
+- Fix Source Kzlz9 (by @paregi12)
+
 ## v9.1.5
 - 🔀 Upstream
 - Fixed sync server by @MrLetsplay2003 (two server is up rn one from @clquwu and one from @MrLetsplay2003)
