@@ -46,12 +46,21 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
+      - name: Set NIGHTLY_COMMIT env
+        if: ${{ github.event.inputs.release_type == 'pre-release' }}
+        run: |
+            echo "NIGHTLY_COMMIT=${{ github.event.inputs.nightly_parsers_commit }}" >> $GITHUB_ENV
+
       - name: Get release names
         id: names
         run: |
           if [ "${{ github.event.inputs.release_type }}" = "pre-release" ]; then
             DATE=$(TZ=Asia/Jakarta date +'%d/%m/%Y')
+          if [ -n "$NIGHTLY_COMMIT" ]; then
+            SHORT_SHA=${NIGHTLY_COMMIT:0:10}  # ambil 10 karakter pertama dari commit input
+          else
             SHORT_SHA=$(git rev-parse --short HEAD)
+          fi
 
             DISPLAY_NAME="Nightly ${DATE}"
             TAG_NAME="Nightly-$(TZ=Asia/Jakarta date +'%d%m%Y')-${SHORT_SHA}"
