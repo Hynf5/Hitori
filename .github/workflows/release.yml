@@ -17,6 +17,9 @@ on:
       release_title:
         description: 'Judul tambahan Stable (Hotfix)'
         required: false
+      nightly_parsers_commit:
+        description: 'Commit hash parsers (Nightly)'
+        required: false
       nightly_changelog:
         description: 'Changelog Pre-release, gunakan ";" untuk pisah baris'
         required: false
@@ -120,6 +123,11 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
+      - name: Override parsers version (Nightly only)
+        if: ${{ github.event.inputs.release_type == 'pre-release' && github.event.inputs.nightly_parsers_commit != '' }}
+        run: |
+          sed -i 's/^parsers = "[^"]*"/parsers = "${{ github.event.inputs.nightly_parsers_commit }}"/' gradle/libs.versions.toml
+
       - name: Build APK
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
@@ -165,3 +173,4 @@ jobs:
       - name: Clean up keystore
         if: always()
         run: rm -f keystore.jks
+        
