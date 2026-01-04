@@ -223,6 +223,22 @@
 			android:exported="true"
 			android:label="@string/sync" />
 		<activity
+			android:name="org.koitharu.kotatsu.sync.ui.SyncAuthResetActivity"
+			android:exported="true"
+			android:label="@string/sync"
+			android:launchMode="singleTop">
+
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+
+				<data android:scheme="kotatsu" />
+				<data android:host="reset-password" />
+			</intent-filter>
+		</activity>
+		<activity
 			android:name="org.koitharu.kotatsu.reader.ui.colorfilter.ColorFilterConfigActivity"
 			android:label="@string/color_correction" />
 		<activity

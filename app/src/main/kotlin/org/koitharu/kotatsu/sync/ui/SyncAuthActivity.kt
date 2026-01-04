@@ -60,12 +60,14 @@ class SyncAuthActivity : BaseActivity<ActivitySyncAuthBinding>(), View.OnClickLi
 		viewBinding.buttonCancel.setOnClickListener(this)
 		viewBinding.buttonDone.setOnClickListener(this)
 		viewBinding.buttonSettings.setOnClickListener(this)
+		viewBinding.buttonForgotPassword.setOnClickListener(this)
 		viewBinding.editEmail.addTextChangedListener(this)
 		viewBinding.editPassword.addTextChangedListener(this)
 
 		onBackPressedDispatcher.addCallback(pageBackCallback)
 
 		viewModel.onTokenObtained.observeEvent(this, ::onTokenReceived)
+		viewModel.onPasswordReset.observeEvent(this, ::onPasswordReset)
 		viewModel.onError.observeEvent(this, ::onError)
 		viewModel.isLoading.observe(this, ::onLoadingStateChanged)
 		viewModel.onAccountAlreadyExists.observeEvent(this) {
@@ -123,6 +125,12 @@ class SyncAuthActivity : BaseActivity<ActivitySyncAuthBinding>(), View.OnClickLi
 			R.id.button_settings -> {
 				SyncHostDialogFragment.show(supportFragmentManager, viewModel.syncURL.value)
 			}
+
+			R.id.button_forgot_password -> {
+				viewModel.forgotPassword(
+					email = viewBinding.editEmail.text.toString().trim()
+				)
+			}
 		}
 	}
 
@@ -172,6 +180,7 @@ class SyncAuthActivity : BaseActivity<ActivitySyncAuthBinding>(), View.OnClickLi
 			buttonCancel.isVisible = page == PAGE_EMAIL
 			layoutEmail.isVisible = page == PAGE_EMAIL
 			layoutPassword.isVisible = page == PAGE_PASSWORD
+			buttonForgotPassword.isVisible = page == PAGE_PASSWORD
 		}
 		pageBackCallback.update()
 	}
@@ -201,6 +210,14 @@ class SyncAuthActivity : BaseActivity<ActivitySyncAuthBinding>(), View.OnClickLi
 		resultBundle = result
 		setResult(RESULT_OK)
 		finish()
+	}
+
+	private fun onPasswordReset(unit: Unit) {
+		MaterialAlertDialogBuilder(this)
+			.setNegativeButton(R.string.close, null)
+			.setTitle(R.string.forgot_password)
+			.setMessage(getString(R.string.reset_email_sent))
+			.show()
 	}
 
 	private fun onAccountAlreadyExists() {

@@ -2,6 +2,8 @@ package org.koitharu.kotatsu.sync.domain
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.AccountManagerCallback
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
 import android.content.Context
@@ -9,7 +11,9 @@ import android.os.Bundle
 import androidx.room.InvalidationTracker
 import androidx.room.withTransaction
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +55,36 @@ class SyncController @Inject constructor(
 		}
 	}
 
+	fun addAccount(activity: Activity, callback: (account: Account?) -> Unit) {
+		am.addAccount(accountType, accountType, null, null, activity, { _ -> onAccountUpdated(callback) }, null)
+	}
+
+	fun removeAccount(activity: Activity, account: Account, callback: (account: Account?) -> Unit) {
+		val handler = AccountManagerCallback<Bundle> { _ -> onAccountUpdated(callback) }
+		am.removeAccount(account, activity, handler, null)
+	}
+
+	private fun onAccountUpdated(callback: (account: Account?) -> Unit) {
+		val account = am.getAccountsByType(accountType).firstOrNull()
+
+		if(account != null) {
+			setEnabled(account, syncFavorites = true, syncHistory = true)
+			val job = SupervisorJob()
+			val dispatcher = Dispatchers.IO
+			val scope = CoroutineScope(job + dispatcher)
+			scope.launch {
+				requestFullSync()
+			}
+		}
+
+		callback(account)
+	}
+
+	fun setEnabled(account: Account, syncFavorites: Boolean, syncHistory: Boolean) {
+		ContentResolver.setSyncAutomatically(account, authorityFavourites, syncFavorites)
+		ContentResolver.setSyncAutomatically(account, authorityHistory, syncHistory)
+	}
+
 	fun isEnabled(account: Account): Boolean {
 		return ContentResolver.getMasterSyncAutomatically() && (ContentResolver.getSyncAutomatically(
 			account,
@@ -59,6 +93,20 @@ class SyncController @Inject constructor(
 			account,
 			authorityHistory,
 		))
+	}
+
+	fun isFavouritesEnabled(account: Account): Boolean {
+		return ContentResolver.getMasterSyncAutomatically() && ContentResolver.getSyncAutomatically(
+			account,
+			authorityFavourites,
+		)
+	}
+
+	fun isHistoryEnabled(account: Account): Boolean {
+		return ContentResolver.getMasterSyncAutomatically() && ContentResolver.getSyncAutomatically(
+			account,
+			authorityHistory,
+		)
 	}
 
 	fun getLastSync(account: Account, authority: String): Long {

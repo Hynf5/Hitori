@@ -22,6 +22,7 @@ class SyncAuthViewModel @Inject constructor(
 
 	val onAccountAlreadyExists = MutableEventFlow<Unit>()
 	val onTokenObtained = MutableEventFlow<SyncAuthResult>()
+	val onPasswordReset = MutableEventFlow<Unit>()
 	val syncURL = MutableStateFlow(context.resources.getStringArray(R.array.sync_url_list).first())
 
 	init {
@@ -40,6 +41,14 @@ class SyncAuthViewModel @Inject constructor(
 			val token = api.authenticate(urlValue, email, password)
 			val result = SyncAuthResult(syncURL.value, email, password, token)
 			onTokenObtained.call(result)
+		}
+	}
+
+	fun forgotPassword(email: String) {
+		val urlValue = syncURL.value
+		launchLoadingJob(Dispatchers.Default) {
+			api.forgotPassword(urlValue, email)
+			onPasswordReset.call(Unit)
 		}
 	}
 }

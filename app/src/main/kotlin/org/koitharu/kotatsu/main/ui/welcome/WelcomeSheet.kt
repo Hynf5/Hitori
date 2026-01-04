@@ -1,6 +1,5 @@
 package org.koitharu.kotatsu.main.ui.welcome
 
-import android.accounts.AccountManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,13 +26,18 @@ import org.koitharu.kotatsu.core.util.ext.tryLaunch
 import org.koitharu.kotatsu.databinding.SheetWelcomeBinding
 import org.koitharu.kotatsu.filter.ui.model.FilterProperty
 import org.koitharu.kotatsu.parsers.model.ContentType
+import org.koitharu.kotatsu.sync.domain.SyncController
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WelcomeSheet : BaseAdaptiveSheet<SheetWelcomeBinding>(), ChipsView.OnChipClickListener, View.OnClickListener,
 	ActivityResultCallback<Uri?> {
 
 	private val viewModel by viewModels<WelcomeViewModel>()
+
+	@Inject
+	lateinit var syncController: SyncController
 
 	private val backupSelectCall = registerForActivityResult(
 		ActivityResultContracts.OpenDocument(),
@@ -83,9 +87,7 @@ class WelcomeSheet : BaseAdaptiveSheet<SheetWelcomeBinding>(), ChipsView.OnChipC
 			}
 
 			R.id.chip_sync -> {
-				val am = AccountManager.get(v.context)
-				val accountType = getString(R.string.account_type_sync)
-				am.addAccount(accountType, accountType, null, null, requireActivity(), null, null)
+				syncController.addAccount(requireActivity()) {}
 			}
 
             R.id.chip_directories -> {

@@ -62,7 +62,6 @@ class ServicesSettingsFragment : BasePreferenceFragment(R.string.services),
 		bindScrobblerSummary(AppSettings.KEY_ANILIST, ScrobblerService.ANILIST)
 		bindScrobblerSummary(AppSettings.KEY_MAL, ScrobblerService.MAL)
 		bindScrobblerSummary(AppSettings.KEY_KITSU, ScrobblerService.KITSU)
-		bindSyncSummary()
 	}
 
 	override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
@@ -92,20 +91,6 @@ class ServicesSettingsFragment : BasePreferenceFragment(R.string.services),
 
 			AppSettings.KEY_KITSU -> {
 				handleScrobblerClick(ScrobblerService.KITSU)
-				true
-			}
-
-			AppSettings.KEY_SYNC -> {
-				val am = AccountManager.get(requireContext())
-				val accountType = getString(R.string.account_type_sync)
-				val account = am.getAccountsByType(accountType).firstOrNull()
-				if (account == null) {
-					am.addAccount(accountType, accountType, null, null, requireActivity(), null, null)
-				} else {
-					if (!router.openSystemSyncSettings(account)) {
-						Snackbar.make(listView, R.string.operation_not_supported, Snackbar.LENGTH_SHORT).show()
-					}
-				}
 				true
 			}
 
@@ -146,23 +131,6 @@ class ServicesSettingsFragment : BasePreferenceFragment(R.string.services),
 			confirmScrobblerAuth(scrobblerService)
 		} else {
 			router.openScrobblerSettings(scrobblerService)
-		}
-	}
-
-	private fun bindSyncSummary() {
-		viewLifecycleScope.launch {
-			val account = withContext(Dispatchers.Default) {
-				val type = getString(R.string.account_type_sync)
-				AccountManager.get(requireContext()).getAccountsByType(type).firstOrNull()
-			}
-			findPreference<Preference>(AppSettings.KEY_SYNC)?.run {
-				summary = when {
-					account == null -> getString(R.string.sync_title)
-					syncController.isEnabled(account) -> account.name
-					else -> getString(R.string.disabled)
-				}
-			}
-			findPreference<Preference>(AppSettings.KEY_SYNC_SETTINGS)?.isEnabled = account != null
 		}
 	}
 

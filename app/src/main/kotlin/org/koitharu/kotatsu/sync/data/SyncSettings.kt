@@ -46,6 +46,8 @@ class SyncSettings(
 			"http://$this"
 		}
 
+		const val KEY_SYNC = "sync"
 		const val KEY_SYNC_URL = "host"
+		const val KEY_LOGOUT = "logout"
 	}
 }

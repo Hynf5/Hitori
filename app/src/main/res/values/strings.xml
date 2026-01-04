@@ -241,6 +241,8 @@
     <string name="back">Back</string>
     <string name="sync">Synchronization</string>
     <string name="sync_title">Sync your data</string>
+    <string name="sync_login">Log in to sync your data</string>
+	<string name="reset_password">Reset password</string>
     <string name="email_enter_hint">Enter your email to continue</string>
     <string name="hide">Hide</string>
     <string name="new_sources_text">New manga sources are available</string>
@@ -905,4 +907,11 @@
     <string name="download_default_directory">Default directory for downloading manga</string>
     <string name="private_app_directory_warning">This directory with all data will be deleted if you uninstall the application</string>
     <string name="available_pattern">%1$s available</string>
+	<string name="forgot_password">Forgot password</string>
+	<string name="reset_email_sent">If a valid account exists, an email to reset your password has been sent to your inbox</string>
+    <string name="sync_auth_reset_title">Reset password</string>
+	<string name="sync_auth_reset_hint">Please set a new password for your account</string>
+	<string name="confirm_password">Confirm Password</string>
+	<string name="password_reset">Password reset successfully</string>
+	<string name="no_reset_token">No reset token provided</string>
 </resources>

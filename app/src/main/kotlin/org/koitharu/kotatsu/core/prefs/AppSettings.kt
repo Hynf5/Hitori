@@ -749,8 +749,6 @@ class AppSettings @Inject constructor(@ApplicationContext context: Context) {
 		const val KEY_EXIT_CONFIRM = "exit_confirm"
 		const val KEY_INCOGNITO_MODE = "incognito"
 		const val KEY_READER_MULTITASK = "reader_multitask"
-		const val KEY_SYNC = "sync"
-		const val KEY_SYNC_SETTINGS = "sync_settings"
 		const val KEY_READER_BAR = "reader_bar"
 		const val KEY_READER_BAR_TRANSPARENT = "reader_bar_transparent"
 		const val KEY_READER_CHAPTER_TOAST = "reader_chapter_toast"

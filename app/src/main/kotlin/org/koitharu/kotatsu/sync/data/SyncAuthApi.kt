@@ -35,4 +35,36 @@ class SyncAuthApi @Inject constructor(
 			throw SyncApiException(message, code)
 		}
 	}
+
+	suspend fun forgotPassword(syncURL: String, email: String) {
+		val body = JSONObject(
+			mapOf("email" to email),
+		).toRequestBody()
+		val request = Request.Builder()
+			.url("$syncURL/forgot-password")
+			.post(body)
+			.build()
+		val response = okHttpClient.newCall(request).await()
+		if (!response.isSuccessful) {
+			val code = response.code
+			val message = response.parseRaw().removeSurrounding('"')
+			throw SyncApiException(message, code)
+		}
+	}
+
+	suspend fun resetPassword(syncURL: String, resetToken: String, password: String) {
+		val body = JSONObject(
+			mapOf("reset_token" to resetToken, "password" to password),
+		).toRequestBody()
+		val request = Request.Builder()
+			.url("$syncURL/reset-password")
+			.post(body)
+			.build()
+		val response = okHttpClient.newCall(request).await()
+		if (!response.isSuccessful) {
+			val code = response.code
+			val message = response.parseRaw().removeSurrounding('"')
+			throw SyncApiException(message, code)
+		}
+	}
 }
