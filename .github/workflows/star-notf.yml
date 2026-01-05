@@ -9,6 +9,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ===============================
+      # 🔎 Get total stars
+      # ===============================
+      - name: Get total stars
+        id: stars
+        run: |
+          STARS=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }} \
+            | jq '.stargazers_count')
+
+          echo "count=$STARS" >> $GITHUB_OUTPUT
+
+      # ===============================
+      # ⭐ Send Discord Embed
+      # ===============================
       - name: Send Discord Embed ⭐
         uses: tsickert/discord-webhook@v7.0.0
         with:
@@ -18,13 +34,15 @@ jobs:
           embed-url: https://github.com/${{ github.repository }}
 
           embed-description: |
-            **User:** `${{ github.actor }}`
-            **Repository:** `${{ github.repository }}`
-            **Action:** ⭐ Starred the repository
+            **👤 User:** `${{ github.actor }}`
+            **📦 Repository:** `${{ github.repository }}`
+            **⭐ Total Stars:** **${{ steps.stars.outputs.count }}**
 
+          # Avatar orang yang nge-star
           embed-thumbnail-url: https://github.com/${{ github.actor }}.png
-          embed-color: 16776960
+
+          # 🎨 Warna default (netral & aman)
+          embed-color: 15105570
 
           embed-footer-text: "GitHub Star Event"
           embed-footer-icon-url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-          embed-timestamp: "${{ github.event.starred_at }}"
