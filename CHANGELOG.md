@@ -4,7 +4,6 @@
 - Fixed forgot password link and rework of the sync flow (by @MrLetsplay2003)
 - Fixed Klz9 parser (by @clquwu)
 - Westmanga: display null results as empty instead of error (by @clquwu)
-
 ### 📦 Feature
 - Added Comix choice of teams (by @clquwu)
 
