@@ -18,10 +18,10 @@ on:
         description: 'Judul tambahan Stable (Hotfix)'
         required: false
       nightly_parsers_commit:
-        description: 'Commit hash parsers (Nightly)'
+        description: 'Commit hash parsers (Nightly only)'
         required: false
       nightly_changelog:
-        description: 'Changelog Pre-release, gunakan ";" untuk pisah baris'
+        description: 'Changelog for Nightly, gunakan ";" untuk pisah baris'
         required: false
 
 jobs:
@@ -29,29 +29,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout code 📥
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Java
+      - name: Setup Java ☕
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
+      - name: Setup Android SDK 🛠️
         uses: android-actions/setup-android@v3
 
-      - name: Decode keystore
+      - name: Decode keystore 🔑
         run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
 
-      - name: Set NIGHTLY_COMMIT env
+      - name: Set NIGHTLY_COMMIT env 🌙
         if: ${{ github.event.inputs.release_type == 'pre-release' }}
         run: |
             echo "NIGHTLY_COMMIT=${{ github.event.inputs.nightly_parsers_commit }}" >> $GITHUB_ENV
 
-      - name: Get release names
+      - name: Get release names 🏷️
         id: names
         run: |
           if [ "${{ github.event.inputs.release_type }}" = "pre-release" ]; then
@@ -88,7 +88,7 @@ jobs:
           echo "display_name=${DISPLAY_NAME}" >> "$GITHUB_OUTPUT"
           echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare changelog
+      - name: Prepare changelog 📝
         id: prepare
         run: |
           if [ "${{ github.event.inputs.release_type }}" = "pre-release" ]; then
@@ -122,7 +122,7 @@ jobs:
 
           echo "changelog_file=${CHANGELOG_FILE}" >> "$GITHUB_OUTPUT"
 
-      - name: Cache Gradle
+      - name: Cache Gradle 🗂️
         uses: actions/cache@v4
         with:
           path: |
@@ -132,12 +132,12 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - name: Override parsers version (Nightly only)
+      - name: Override parsers version (Nightly only) 🔧
         if: ${{ github.event.inputs.release_type == 'pre-release' && github.event.inputs.nightly_parsers_commit != '' }}
         run: |
           sed -i 's/^parsers = "[^"]*"/parsers = "${{ github.event.inputs.nightly_parsers_commit }}"/' gradle/libs.versions.toml
 
-      - name: Build APK
+      - name: Build APK 🏗️
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -147,7 +147,7 @@ jobs:
              ./gradlew assembleRelease --no-daemon --stacktrace || \
              ./gradlew assembleRelease --no-daemon --stacktrace
 
-      - name: Rename APK for Nightly
+      - name: Rename APK (Nightly only) 📦
         if: ${{ github.event.inputs.release_type == 'pre-release' }}
         run: |
           cd app/build/outputs/apk/release
@@ -155,7 +155,7 @@ jobs:
             mv "$file" "app-nightly.apk"
           done
 
-      - name: Upload Release APK
+      - name: Upload Release APK 🚀
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.names.outputs.tag_name }}
@@ -167,7 +167,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # 🔥 KIRIM PAYLOAD ACTOR KE DISCORD WORKFLOW
-      - name: Trigger Discord notification
+      - name: Trigger Discord notification 🔥
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -179,7 +179,7 @@ jobs:
               "actor": "${{ github.actor }}"
             }
 
-      - name: Clean up keystore
+      - name: Clean up keystore 🧹
         if: always()
         run: rm -f keystore.jks
         
