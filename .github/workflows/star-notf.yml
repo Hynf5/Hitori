@@ -30,19 +30,15 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-          embed-title: "⭐ New Star Received!"
+          embed-title: "⭐ [${{ github.repository }}] New Star Received!"
           embed-url: https://github.com/${{ github.repository }}
 
           embed-description: |
             **👤 User:** `${{ github.actor }}`
             **📦 Repository:** `${{ github.repository }}`
-            **⭐ Total Stars:** **${{ steps.stars.outputs.count }}**
+            **✨ Total Stars:** **${{ steps.stars.outputs.count }}**
 
-          # Avatar orang yang nge-star
           embed-thumbnail-url: https://github.com/${{ github.actor }}.png
-
-          # 🎨 Warna default (netral & aman)
-          embed-color: 15105570
-
+          embed-color: 16776960
           embed-footer-text: "GitHub Star Event"
           embed-footer-icon-url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
