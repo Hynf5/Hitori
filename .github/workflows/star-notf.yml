@@ -1,0 +1,30 @@
+name: ⭐ New Star Notification
+
+on:
+  watch:
+    types: [started]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord Embed ⭐
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+          embed-title: "⭐ New Star Received!"
+          embed-url: https://github.com/${{ github.repository }}
+
+          embed-description: |
+            **User:** `${{ github.actor }}`
+            **Repository:** `${{ github.repository }}`
+            **Action:** ⭐ Starred the repository
+
+          embed-thumbnail-url: https://github.com/${{ github.actor }}.png
+          embed-color: 16776960
+
+          embed-footer-text: "GitHub Star Event"
+          embed-footer-icon-url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          embed-timestamp: "${{ github.event.starred_at }}"
