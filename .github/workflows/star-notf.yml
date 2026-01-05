@@ -30,7 +30,7 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-          embed-title: "⭐ [${{ github.repository }}] New Star Received!"
+          embed-title: "⭐ New Star Received!"
           embed-url: https://github.com/${{ github.repository }}
 
           embed-description: |
