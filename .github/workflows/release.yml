@@ -164,13 +164,13 @@ jobs:
           prerelease: ${{ github.event.inputs.release_type == 'pre-release' }}
           files: app/build/outputs/apk/release/*.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
       # 🔥 KIRIM PAYLOAD ACTOR KE DISCORD WORKFLOW
       - name: Trigger Discord notification 🔥
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
           event-type: new-release
           client-payload: |
             {
