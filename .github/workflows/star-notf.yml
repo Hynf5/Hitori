@@ -34,9 +34,9 @@ jobs:
           embed-url: https://github.com/${{ github.repository }}
 
           embed-description: |
-            **👤 User:** `${{ github.actor }}`
-            **📦 Repository:** `${{ github.repository }}`
-            **✨ Total Stars:** **${{ steps.stars.outputs.count }}**
+            > **👤 User:** `${{ github.actor }}`
+            > **📦 Repository:** `${{ github.repository }}`
+            > **✨ Total Stars:** **${{ steps.stars.outputs.count }}**
 
           embed-thumbnail-url: https://github.com/${{ github.actor }}.png
           embed-color: 16776960
