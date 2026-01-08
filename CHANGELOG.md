@@ -1,3 +1,10 @@
+## v9.1.8
+### 🔀 Upstream
+- Fixed Bato (by @paregi12)
+- Fixed Kiryuu (by @clquwu)
+- Added Lagoon Scans (by @clquwu)
+- Keep Bato.To V3
+
 ## v9.1.7
 ### 🔀 Upstream 
 ### 🛠️ Fix 
