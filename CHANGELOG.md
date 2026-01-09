@@ -1,3 +1,19 @@
+## v9.1.8
+### 🔀 Upstream
+- Fixed Bato (by @paregi12)
+- Fixed Kiryuu (by @clquwu)
+- Added Lagoon Scans (by @clquwu)
+- Keep Bato.To V3
+
+## v9.1.7
+### 🔀 Upstream 
+### 🛠️ Fix 
+- Fixed forgot password link and rework of the sync flow (by @MrLetsplay2003)
+- Fixed Klz9 parser (by @clquwu)
+- Westmanga: display null results as empty instead of error (by @clquwu)
+### 📦 Feature
+- Added Comix choice of teams (by @clquwu)
+
 ## v9.1.6
 ### 📑 Source
 - Add New ManhwaRead source (by @paregi12, @YakaTeam)
