@@ -1,3 +1,9 @@
+## v9.1.9
+### 🔀 Upstream 
+- Fixed MangaPark images (by @PabloGirol)
+- Fixed AzoraMoon (by @clquwu)
+- Fixed KdtScans (by @clquwu)
+
 ## v9.1.8
 ### 🔀 Upstream
 - Fixed Bato (by @paregi12)
