@@ -163,6 +163,13 @@ jobs:
             mv "$file" "Hitori-Nightly.apk"
           done
 
+      - name: Verify Nightly output
+        if: >
+          github.event.inputs.release_type == 'pre-release' &&
+          github.event.inputs.nightly_publish == 'no'
+        run: |
+          ls -lh app/build/outputs/apk/release || exit 1
+
       - name: Upload Nightly APK (Actions only) 📦
         if: >
           github.event.inputs.release_type == 'pre-release' &&
@@ -170,7 +177,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Hitori-Nightly
-          path: app/build/outputs/apk/release/Hitori-Nightly.apk
+          path: app/build/outputs/apk/release/
 
       - name: Upload Release APK 🚀
         if: >
