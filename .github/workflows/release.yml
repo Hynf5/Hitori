@@ -169,8 +169,8 @@ jobs:
           github.event.inputs.nightly_publish == 'no'
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-apk
-          path: app/build/outputs/apk/release/*.apk
+          name: Hitori-Nightly
+          path: app/build/outputs/apk/release/Hitori-Nightly.apk
 
       - name: Upload Release APK 🚀
         if: >
