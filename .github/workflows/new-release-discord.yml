@@ -67,19 +67,6 @@ jobs:
           embed-color: 12058646
 
       # NIGHTLY / PRE-RELEASE EMBED
-      - name: Send PRE-RELEASE embed
-        if: ${{ steps.release.outputs.prerelease == 'true' }}
-        uses: tsickert/discord-webhook@v7.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-          embed-title: "🧪 Pre-release: ${{ github.event.repository.name }} ${{ steps.release.outputs.title }}"
-          embed-url: "${{ steps.release.outputs.url }}"
-          embed-description: "${{ steps.release.outputs.body }}"
-          embed-color: 15105570
-          embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
-          embed-footer-text: "${{ steps.release.outputs.author }} 🍃 | +${{ steps.release.outputs.commit }}"
-          embed-timestamp: "${{ steps.release.outputs.published }}"
-      # PRE-RELEASE → CHANNEL 2
       - name: Send PRE-RELEASE embed (Channel B)
         if: ${{ steps.release.outputs.prerelease == 'true' }}
         uses: tsickert/discord-webhook@v7.0.0
@@ -91,5 +78,5 @@ jobs:
           embed-description: "${{ steps.release.outputs.body }}"
           embed-color: 15105570
           embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
-          embed-footer-text: "${{ steps.release.outputs.author }} 🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-text: "${{ steps.release.outputs.author }}🍃"
           embed-timestamp: "${{ steps.release.outputs.published }}"
