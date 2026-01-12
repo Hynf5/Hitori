@@ -53,7 +53,7 @@ jobs:
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
           embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
-          embed-footer-text: "${{ steps.release.outputs.author }} 🍃 | +${{ steps.release.outputs.commit }}"
+          embed-footer-text: "${{ steps.release.outputs.author }}🍃 "
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # STABLE DOWNLOAD
