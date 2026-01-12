@@ -23,6 +23,14 @@ on:
       nightly_changelog:
         description: 'Changelog for Nightly, gunakan ";" untuk pisah baris'
         required: false
+      nightly_publish:
+        description: 'Nightly: Publish ke GitHub Release?'
+        required: false
+        default: 'yes'
+        type: choice
+        options:
+          - yes
+          - no
 
 jobs:
   release:
@@ -152,10 +160,23 @@ jobs:
         run: |
           cd app/build/outputs/apk/release
           for file in *.apk; do
-            mv "$file" "app-nightly.apk"
+            mv "$file" "Hitori-Nightly.apk"
           done
 
+      - name: Upload Nightly APK (Actions only) 📦
+        if: >
+          github.event.inputs.release_type == 'pre-release' &&
+          github.event.inputs.nightly_publish == 'no'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-apk
+          path: app/build/outputs/apk/release/*.apk
+
       - name: Upload Release APK 🚀
+        if: >
+          github.event.inputs.release_type == 'release' ||
+          (github.event.inputs.release_type == 'pre-release' &&
+           github.event.inputs.nightly_publish == 'yes')
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.names.outputs.tag_name }}
@@ -168,6 +189,10 @@ jobs:
 
       # 🔥 KIRIM PAYLOAD ACTOR KE DISCORD WORKFLOW
       - name: Trigger Discord notification 🔥
+        if: >
+          github.event.inputs.release_type == 'release' ||
+          (github.event.inputs.release_type == 'pre-release' &&
+           github.event.inputs.nightly_publish == 'yes')
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.MY_GITHUB_TOKEN }}
