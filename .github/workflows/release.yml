@@ -63,7 +63,7 @@ jobs:
           fi
 
             DISPLAY_NAME="Nightly ${DATE}"
-            TAG_NAME="Nightly-$(TZ=Asia/Jakarta date +'%d%m%Y')-${SHORT_SHA}"
+            TAG_NAME="Nightly-$(TZ=Asia/Jakarta date +'%d%m%Y')"
           else
             if [ -z "${{ github.event.inputs.tag }}" ]; then
               echo "ERROR: Tag wajib diisi untuk Stable release"
