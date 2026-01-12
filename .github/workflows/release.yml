@@ -23,14 +23,6 @@ on:
       nightly_changelog:
         description: 'Changelog for Nightly, gunakan ";" untuk pisah baris'
         required: false
-      nightly_publish:
-        description: 'Nightly: Publish ke GitHub Release?'
-        required: false
-        default: 'yes'
-        type: choice
-        options:
-          - yes
-          - no
 
 jobs:
   release:
@@ -160,30 +152,10 @@ jobs:
         run: |
           cd app/build/outputs/apk/release
           for file in *.apk; do
-            mv "$file" "Hitori-Nightly.apk"
+            mv "$file" "hitori-nightly.apk"
           done
 
-      - name: Verify Nightly output
-        if: >
-          github.event.inputs.release_type == 'pre-release' &&
-          github.event.inputs.nightly_publish == 'no'
-        run: |
-          ls -lh app/build/outputs/apk/release || exit 1
-
-      - name: Upload Nightly APK (Actions only) 📦
-        if: >
-          github.event.inputs.release_type == 'pre-release' &&
-          github.event.inputs.nightly_publish == 'no'
-        uses: actions/upload-artifact@v4
-        with:
-          name: Hitori-Nightly
-          path: app/build/outputs/apk/release/
-
       - name: Upload Release APK 🚀
-        if: >
-          github.event.inputs.release_type == 'release' ||
-          (github.event.inputs.release_type == 'pre-release' &&
-           github.event.inputs.nightly_publish == 'yes')
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.names.outputs.tag_name }}
@@ -196,10 +168,6 @@ jobs:
 
       # 🔥 KIRIM PAYLOAD ACTOR KE DISCORD WORKFLOW
       - name: Trigger Discord notification 🔥
-        if: >
-          github.event.inputs.release_type == 'release' ||
-          (github.event.inputs.release_type == 'pre-release' &&
-           github.event.inputs.nightly_publish == 'yes')
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.MY_GITHUB_TOKEN }}
@@ -214,4 +182,5 @@ jobs:
       - name: Clean up keystore 🧹
         if: always()
         run: rm -f keystore.jks
+
         
