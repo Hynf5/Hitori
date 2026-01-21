@@ -40,6 +40,13 @@ jobs:
             core.setOutput("author", actor);
             core.setOutput("author_avatar", avatar);
 
+      - name: Download APK
+        run: |
+          FILE_NAME="Hitori-${{ steps.release.outputs.tag }}.apk"
+          curl -L "${{ steps.release.outputs.apk }}" -o "$FILE_NAME"
+          echo "apk_file=$FILE_NAME" >> $GITHUB_OUTPUT
+        id: apk
+      
       # STABLE EMBED
       - name: Send RELEASE embed to Discord
         if: ${{ steps.release.outputs.prerelease == 'false' }}
@@ -55,6 +62,14 @@ jobs:
           embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
           embed-footer-text: "${{ steps.release.outputs.author }}🍃 "
           embed-timestamp: "${{ steps.release.outputs.published }}"
+
+      - name: Send STABLE APK file to Discord
+        if: ${{ steps.release.outputs.prerelease == 'false' }}
+        run: |
+          curl -X POST \
+          -F "content=📦 **Stable APK**\n🔖 Tag: ${{ steps.release.outputs.tag }}\n🧩 Commit: ${{ steps.release.outputs.commit }}" \
+          -F "file=@${{ steps.apk.outputs.apk_file }}" \
+          ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
 
       # STABLE DOWNLOAD
       - name: Send STABLE download embed
@@ -80,3 +95,11 @@ jobs:
           embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
           embed-footer-text: "${{ steps.release.outputs.author }}🍃"
           embed-timestamp: "${{ steps.release.outputs.published }}"
+
+      - name: Send NIGHTLY APK file to Discord
+        if: ${{ steps.release.outputs.prerelease == 'true' }}
+        run: |
+          curl -X POST \
+          -F "content=🧪 **Nightly APK**\n🔖 Tag: ${{ steps.release.outputs.tag }}\n⚠️ Build eksperimental" \
+          -F "file=@${{ steps.apk.outputs.apk_file }}" \
+          ${{ secrets.DISCORD_NIGHTLY_RELEASE }}
