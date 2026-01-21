@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Get release by tag
         id: release
         uses: actions/github-script@v7
@@ -40,6 +42,12 @@ jobs:
             core.setOutput("author", actor);
             core.setOutput("author_avatar", avatar);
 
+      - name: Get parsers short commit
+        id: parsers
+        run: |
+          PARSER_SHA=$(grep '^parsers' gradle/libs.versions.toml | sed 's/.*"\(.*\)"/\1/' | cut -c1-7)
+          echo "parsers_short=$PARSER_SHA" >> $GITHUB_OUTPUT
+
       # STABLE EMBED
       - name: Send RELEASE embed to Discord
         if: ${{ steps.release.outputs.prerelease == 'false' }}
@@ -53,7 +61,7 @@ jobs:
           embed-color: 12058646
           embed-thumbnail-url: "${{ secrets.THUMBNAIL_URL }}"
           embed-footer-icon-url: "${{ steps.release.outputs.author_avatar }}"
-          embed-footer-text: "${{ steps.release.outputs.author }}🍃 "
+          embed-footer-text: "${{ steps.release.outputs.author }}🍃 | +${{ steps.parsers.outputs.parsers_short }}"
           embed-timestamp: "${{ steps.release.outputs.published }}"
 
       # STABLE DOWNLOAD
