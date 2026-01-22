@@ -11,7 +11,7 @@
 **[Hitori](https://github.com/Hynf5/Hitori) is a free and open-source manga reader for Android with built-in
 online content sources. The main goal of the fork is to maintain existing features and sources.**
 
-![Android 6.0](https://img.shields.io/badge/android-6.0+-brightgreen) [![Discord](https://img.shields.io/discord/898363402467045416?color=5865f2&label=discord)](https://discord.gg/d3NEKt7nqf) [![License](https://img.shields.io/github/license/KotatsuApp/Kotatsu)](https://github.com/KotatsuApp/Kotatsu/blob/devel/LICENSE)
+![Android 6.0](https://img.shields.io/badge/android-6.0+-brightgreen) [![Discord](https://img.shields.io/discord/1439230706675879988?color=5865f2&label=discord)](https://discord.gg/d3NEKt7nqf) [![License](https://img.shields.io/github/license/KotatsuApp/Kotatsu)](https://github.com/KotatsuApp/Kotatsu/blob/devel/LICENSE)
 
 ### Main Features
 
