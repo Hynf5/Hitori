@@ -22,7 +22,7 @@ jobs:
 
           echo "list<<EOF" >> "$GITHUB_OUTPUT"
           jq -r '.commits[] |
-          "- " + (.message | gsub("\n+"; " "))
+          "- " + (.message | gsub("\n"; "\n    ↳ "))
           ' "$GITHUB_EVENT_PATH" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
