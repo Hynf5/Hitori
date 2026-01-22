@@ -1,3 +1,15 @@
+## v9.2.0
+### 📝 New & Change
+- Add New Sasangeyou Source
+- Add New Mangago source (by @clquwu)
+- Changed Bato to XBatCat (by @clquwu)
+### 🛠️ Fix
+- Fixed Natsu (by @clquwu)
+- Fixed ThunderScans (by @clquwu)
+- Fixed bug with certain chapters on Azura (by @clquwu)
+- Fixed Azuramoon images parsing (by @clquwu)
+- Fixed Mangaokutr url (by @agnogad)
+
 ## v9.1.9
 ### 🔀 Upstream 
 - Fixed MangaPark images (by @PabloGirol)
