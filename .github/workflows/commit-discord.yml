@@ -24,13 +24,14 @@ jobs:
           jq -r '
           .commits[] |
           (.message | split("\n")) as $lines |
-          "- " + $lines[0] +
+          "● " + $lines[0] +
+          " [֍](https://github.com/'"$GITHUB_REPOSITORY"'/commit/" + .id + ")" +
           (
           if ($lines | length) > 1 then
           "\n" + (
-            $lines[1:] |
-            map(select(length > 0) | "    ↳ " + .) |
-            join("\n")
+          $lines[1:] |
+          map(select(length > 0) | "    ↳ " + .) |
+          join("\n")
           )
           else
           ""
