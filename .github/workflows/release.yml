@@ -23,6 +23,14 @@ on:
       nightly_changelog:
         description: 'Changelog for Nightly, gunakan ";" untuk pisah baris'
         required: false
+      nightly_upload_type:
+        description: 'Nightly upload type'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+          - artifacts-only
+          - both
 
 jobs:
   release:
@@ -176,6 +184,7 @@ jobs:
           path: app/build/outputs/apk/release/*.apk
 
       - name: Upload Release APK 🚀
+        if: ${{ github.event.inputs.release_type != 'pre-release' || github.event.inputs.nightly_upload_type == 'both' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.names.outputs.tag_name }}
