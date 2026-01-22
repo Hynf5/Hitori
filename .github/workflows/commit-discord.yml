@@ -14,6 +14,18 @@ jobs:
         id: commit
         run: echo "short=${GITHUB_SHA::10}" >> $GITHUB_OUTPUT
 
+      - name: Build commit list
+        id: commits
+        run: |
+           COUNT=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
+           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+           echo "list<<EOF" >> "$GITHUB_OUTPUT"
+           jq -r '.commits[] |
+             "- (.message) "
+           ' "$GITHUB_EVENT_PATH" >> "$GITHUB_OUTPUT"
+           echo "EOF" >> "$GITHUB_OUTPUT"
+
       # ===============================
       # 1️⃣ EMBED INFO COMMIT
       # ===============================
@@ -44,10 +56,10 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-          embed-title: "📝 Message:"
+          embed-title: "📝 Commit: ${{ steps.commits.outputs.count }} "
           embed-description: |
-            > ${{ github.event.head_commit.message }}
-
+            ${{ steps.commits.outputs.list }}
+            
           embed-color: 14568502
           embed-footer-icon-url: https://github.com/${{ github.actor }}.png
           embed-footer-text: "${{ github.actor }} | C+${{ steps.commit.outputs.short }}"
