@@ -21,8 +21,21 @@ jobs:
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
 
           echo "list<<EOF" >> "$GITHUB_OUTPUT"
-          jq -r '.commits[] |
-          "- " + (.message | gsub("\n"; "\n    ↳ "))
+          jq -r '
+          .commits[] |
+          (.message | split("\n")) as $lines |
+          "- " + $lines[0] +
+          (
+          if ($lines | length) > 1 then
+          "\n" + (
+            $lines[1:] |
+            map(select(length > 0) | "    ↳ " + .) |
+            join("\n")
+          )
+          else
+          ""
+          end
+          )
           ' "$GITHUB_EVENT_PATH" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
