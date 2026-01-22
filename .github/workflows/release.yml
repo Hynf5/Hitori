@@ -172,9 +172,10 @@ jobs:
       - name: Rename APK (Nightly only) 📦
         if: ${{ github.event.inputs.release_type == 'pre-release' }}
         run: |
+          DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
           cd app/build/outputs/apk/release
           for file in *.apk; do
-            mv "$file" "hitori-nightly.apk"
+            mv "$file" "hitori-nightly-${DATE}.apk"
           done
 
       - name: Archive APK as artifact
