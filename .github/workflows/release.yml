@@ -88,6 +88,20 @@ jobs:
           echo "display_name=${DISPLAY_NAME}" >> "$GITHUB_OUTPUT"
           echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
 
+      - name: Set artifact name 📦
+        id: artifact
+        run: |
+          if [ "${{ github.event.inputs.release_type }}" = "pre-release" ]; then
+            DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
+            ARTIFACT_NAME="hitori-nightly-${DATE}"
+          else
+            RAW_TAG="${{ github.event.inputs.tag }}"
+            TAG="${RAW_TAG#v}"
+            ARTIFACT_NAME="hitori-stable-v${TAG}"
+          fi
+
+          echo "name=${ARTIFACT_NAME}" >> "$GITHUB_OUTPUT"
+
       - name: Prepare changelog 📝
         id: prepare
         run: |
@@ -154,6 +168,12 @@ jobs:
           for file in *.apk; do
             mv "$file" "hitori-nightly.apk"
           done
+
+      - name: Archive APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: app/build/outputs/apk/release/*.apk
 
       - name: Upload Release APK 🚀
         uses: softprops/action-gh-release@v2
