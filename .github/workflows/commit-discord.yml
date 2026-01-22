@@ -17,14 +17,14 @@ jobs:
       - name: Build commit list
         id: commits
         run: |
-           COUNT=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
-           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          COUNT=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
 
-           echo "list<<EOF" >> "$GITHUB_OUTPUT"
-           jq -r '.commits[] |
-             "- (.message) "
-           ' "$GITHUB_EVENT_PATH" >> "$GITHUB_OUTPUT"
-           echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "list<<EOF" >> "$GITHUB_OUTPUT"
+          jq -r '.commits[] |
+          "- " + (.message | gsub("\n+"; " "))
+          ' "$GITHUB_EVENT_PATH" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       # ===============================
       # 1️⃣ EMBED INFO COMMIT
