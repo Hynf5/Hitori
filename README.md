@@ -8,14 +8,24 @@
 
 <div align="center">
 
+<a href="https://github.com/Hynf5/Hitori">
+    <img src="./.idea/hitori.png" alt="Hitori logo" title="Hitori logo" width="170"/>
+</a>
+
+# Hitori 独
+
+<div align="center">
+
 **[Hitori](https://github.com/Hynf5/Hitori) is a free and open-source manga reader for Android with built-in
 online content sources. The main goal of the fork is to maintain existing features and sources.**
 
 ![Android 6.0](https://img.shields.io/badge/Android-6.0+-brightgreen) [![Discord](https://img.shields.io/discord/1439230706675879988?color=5865f2&label=Discord)](https://discord.gg/3bmBFU6z98) [![License](https://img.shields.io/github/license/KotatsuApp/Kotatsu)](https://github.com/KotatsuApp/Kotatsu/blob/devel/LICENSE)
 
-[![Hitori Stable](https://img.shields.io/github/v/release/Hynf5/Hitori?color=4c1&label=Hitori%20Stable)](https://github.com/Hynf5/Hitori/releases/latest) [![Nightly](https://img.shields.io/badge/Hitori_Beta-Nightly--22012026-blue)](https://github.com/Hynf5/Hitori/releases/tag/Nightly-21012026)
+## Download
 
-### Main Features
+[![Hitori Stable](https://img.shields.io/github/v/release/Hynf5/Hitori?label=Stable&labelColor=06599d&color=043b69)](https://github.com/Hynf5/Hitori/releases/latest) [![Nightly](https://img.shields.io/badge/Beta-Nightly--21012026-1c1c39)](https://github.com/Hynf5/Hitori/releases/tag/Nightly-21012026)
+
+## Main Features
 
 <div align="left">
 
