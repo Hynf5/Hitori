@@ -198,6 +198,7 @@ jobs:
 
       # 🔥 KIRIM PAYLOAD ACTOR KE DISCORD WORKFLOW
       - name: Trigger Discord notification 🔥
+        if: ${{ github.event.inputs.release_type != 'pre-release' || github.event.inputs.nightly_upload_type == 'both' }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.MY_GITHUB_TOKEN }}
