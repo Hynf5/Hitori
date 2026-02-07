@@ -201,7 +201,7 @@ class PageSaveHelper @AssistedInject constructor(
 			append('-')
 			append(pageNumber)
 			append('_')
-			append(SimpleDateFormat("yyyy-MM-dd_HHmm").format(Date()))
+			append(SimpleDateFormat("dd-MM-yyyy_HHmm").format(Date()))
 		}
 	}
 
@@ -213,7 +213,7 @@ class PageSaveHelper @AssistedInject constructor(
 
 	private companion object {
 
-		private const val MAX_BASENAME_LENGTH = 12
+		private const val MAX_BASENAME_LENGTH = 64
 		private const val EXTENSION_FALLBACK = "png"
 		private const val TEMP_DIR = "pages"
 	}
