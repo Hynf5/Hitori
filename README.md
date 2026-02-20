@@ -23,7 +23,7 @@ online content sources. The main goal of the fork is to maintain existing featur
 
 ## Download
 
-[![Hitori Stable](https://img.shields.io/github/v/release/Hynf5/Hitori?label=Stable&labelColor=06599d&color=043b69)](https://github.com/Hynf5/Hitori/releases/latest) [![Nightly](https://img.shields.io/badge/Beta-Nightly--21012026-1c1c39)](https://github.com/Hynf5/Hitori/releases/tag/Nightly-21012026)
+[![Hitori Stable](https://img.shields.io/github/v/release/Hynf5/Hitori?label=Stable&labelColor=06599d&color=043b69)](https://github.com/Hynf5/Hitori/releases/latest) [![Nightly](https://img.shields.io/badge/Beta-Nightly--03022026-1c1c39)](https://github.com/Hynf5/Hitori/releases/tag/Nightly-03022026)
 
 ## Main Features
 

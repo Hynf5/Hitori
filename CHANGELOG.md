@@ -1,3 +1,19 @@
+## v9.2.1
+### 📝 New 
+- Add New HoloToon Source (by @clquwu)
+- Add New Qi Scans Source (by @clquwu)
+- Add New LuaScans Source (by @clquwu)
+- Add New RinkoComics Source (by @clquwu)
+- Add New Elftoon Source (by @clquwu)
+- Add New Nyxscans Source (by @clquwu)
+### 🛠️ Fix 
+- Fixed KomikCast (by @clquwu)
+- Fixed Mangakakalot chapter load (by @clquwu)
+- Fixed Webtoons canvas chapter loading (by @clquwu)
+- Fixed Manhwa18 (by @paregi12)
+- Fixed Violetscans (by @clquwu)
+- Fixed Kagane (by @clquwu)
+
 ## v9.2.0
 ### 📝 New & Change
 - Add New Sasangeyou Source
