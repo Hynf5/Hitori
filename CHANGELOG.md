@@ -1,3 +1,19 @@
+## v9.2.2
+### 📝 New
+- Add New Roseveil Source (by @clquwu)
+- Add New  Senkuro Source (by @clquwu)
+- Add New Mangabuff Source (by @clquwu)
+- Add New  BacaKomik Source (by @clquwu)
+- Add New Yomu Mangas Source (by @clquwu)
+- Add New webkomikdewasa Source (by @Hynf5)
+### 🛠️ Fix
+- Fixed Usagi (by @clquwu)
+- Fixed EzManga (by @clquwu)
+- Fixed Mangabuff (by @clquwu)
+- Fixed ReadManga (by @clquwu)
+- Fixed domain and update apiDomain in WestmangaParser (@Hynf5)
+- feat(DoujinDesu): overhaul search/filter logic and fix 404 routing (@Hynf5)
+
 ## v9.2.1
 ### 📝 New 
 - Add New HoloToon Source (by @clquwu)
