@@ -50,6 +50,8 @@ jobs:
 
       - name: Setup Android SDK 🛠️
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'cmdline-tools;latest platform-tools platforms;android-34 build-tools;34.0.0'
 
       - name: Decode keystore 🔑
         run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
